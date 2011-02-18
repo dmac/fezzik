@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+require "pathname"
+
+files_to_copy = [
+  "fezzik.rb",
+  "deploy.rb"
+]
+
+fezzik_dir = Pathname.new($0).realpath.parent.dirname
+system("mkdir -p config")
+system("mkdir -p bin")
+
+files_to_copy.each do |filename|
+  if File.exists?("config/#{filename}") && ARGV[0] != "-f"
+    puts "    config/#{filename} exists; aborting"
+    puts "    to force overwrite, run fezify -f"
+    exit 1
+  else
+    puts "    creating config/#{filename}"
+    system("cp #{fezzik_dir}/#{filename} config")
+  end
+end
+
+app = File.basename Dir.pwd
+unless File.exists?("bin/run_#{app}.sh")
+  puts "    creating bin/run_#{app}.sh"
+  File.open("bin/run_#{app}.sh", "w") do |file|
+    file.puts <<-EOF
+#!/bin/sh
+# This file will be called to start your application.
+    EOF
+  end
+  system("chmod a+x bin/run_#{app}.sh")
+end

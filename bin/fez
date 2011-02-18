@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+require "rubygems"
+require "rake"
+require "pathname"
+require "rake/remote_task"
+
+begin
+  require "config/fezzik"
+  fezzik_dir = Pathname.new($0).realpath.parent.dirname
+  Rake.application["fezzik:run"].invoke
+rescue LoadError
+  puts "    run fezify"
+end
