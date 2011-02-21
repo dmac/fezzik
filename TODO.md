@@ -1,2 +1,1 @@
-* environment variables
 * sensitive options
