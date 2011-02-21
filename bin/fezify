@@ -22,14 +22,13 @@ files_to_copy.each do |filename|
   end
 end
 
-app = File.basename Dir.pwd
-unless File.exists?("bin/run_#{app}.sh")
-  puts "    creating bin/run_#{app}.sh"
-  File.open("bin/run_#{app}.sh", "w") do |file|
+unless File.exists?("bin/run_app.sh")
+  puts "    creating bin/run_app.sh"
+  File.open("bin/run_app.sh", "w") do |file|
     file.puts <<-EOF
 #!/bin/sh
 # This file will be called to start your application.
     EOF
   end
-  system("chmod a+x bin/run_#{app}.sh")
+  system("chmod a+x bin/run_app.sh")
 end
