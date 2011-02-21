@@ -68,6 +68,17 @@ namespace :fezzik do
         " && ./bin/run_#{app}.sh"
   end
 
+  remote_task :stop do
+    puts "stopping app"
+    # Replace YOUR_APP_NAME with whatever is run from your bin/run_app.sh file.
+    # run "(kill -9 `ps aux | grep 'YOUR_APP_NAME' | grep -v grep | awk '{print $2}'` || true)"
+  end
+
+  remote_task :restart do
+    Rake::Task["fezzik:stop"].invoke
+    Rake::Task["fezzik:start"].invoke
+  end
+
   task :deploy => [:symlink, :start] do
     puts "#{app} deployed!"
   end

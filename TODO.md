@@ -1,2 +1,1 @@
 * sensitive options
-* stop/restart
