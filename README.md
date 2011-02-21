@@ -27,7 +27,7 @@ or symlink to <code>fez</code> and <code>fezify</code>.
       set :domain, "www.fezzik.com"
     end
 
-**bin/run_myproject.sh**: write a command that will start your app
+**bin/run_app.sh**: write a command that will start your app
     #!/bin/sh
     nohup ruby server.rb &
 
