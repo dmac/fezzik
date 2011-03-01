@@ -3,12 +3,12 @@
 require "pathname"
 
 files_to_copy = [
-  "fezzik.rb",
-  "deploy.rb"
+  "deploy.rb",
+  "recipes/core.rb"
 ]
 
 fezzik_dir = Pathname.new($0).realpath.parent.dirname
-system("mkdir -p config")
+system("mkdir -p config/recipes")
 system("mkdir -p bin")
 
 files_to_copy.each do |filename|
@@ -18,7 +18,7 @@ files_to_copy.each do |filename|
     exit 1
   else
     puts "    creating config/#{filename}"
-    system("cp #{fezzik_dir}/#{filename} config")
+    system("cp #{fezzik_dir}/#{filename} config/#{filename}")
   end
 end
 
