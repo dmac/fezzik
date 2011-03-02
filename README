@@ -7,18 +7,17 @@ and gets out of your way.
 
 ## Install
 
-Put fezzik somewhere on your file system, then add <code>bin</code> to your path
-or symlink to <code>fez</code> and <code>fezify</code>.
+    sudo gem install fezzik
 
 ## Setup
     $ cd myproject
     $ ls
           server.rb
     $ fezify
-          creating config/fezzik.rb
-          creating config/deploy.rb
-          creating bin/run_myproject.sh
-
+          [new] bin/run_app.sh created
+          [new] config/recipes/core.rb created
+          [new] config/deploy.rb created
+          [done]
 
 **config/deploy.rb**: set your app name and destination servers
     set :app, "fezzik"
