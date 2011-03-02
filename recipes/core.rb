@@ -4,9 +4,9 @@
 namespace :fezzik do
   task :save_environment do
     system("mkdir -p /tmp/#{app}/config")
-    File.open("/tmp/#{app}/config/environment.sh", "w") do |file|
+    File.open("/tmp/#{app}/config/environment.rb", "w") do |file|
       @environment.each do |key, value|
-        file.puts "export #{key.to_s.upcase}=#{value}"
+        file.puts "#{key.to_s.upcase}=\"#{value}\""
       end
     end
   end
@@ -34,7 +34,7 @@ namespace :fezzik do
 
   remote_task :start do
     puts "starting from #{release_path}"
-    run "cd #{current_path} && source config/environment.sh" +
+    run "cd #{current_path} && source config/environment.rb" +
         " && ./bin/run_#{app}.sh"
   end
 
