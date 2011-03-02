@@ -76,7 +76,7 @@ namespace :fezzik do
   remote_task :start do
     puts "starting from #\{release_path\}"
     run "cd #\{current_path\} && source config/environment.sh" +
-        " && ./bin/run_#\{app\}.sh"
+        " && ./bin/run_app.sh"
   end
 
   remote_task :stop do
