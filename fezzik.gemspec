@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "fezzik"
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">=0") if s.respond_to? :required_rubygems_version=
   s.specification_version = 2 if s.respond_to? :specification_version=
@@ -15,11 +15,13 @@ Gem::Specification.new do |s|
 
   s.executables = %w(fez fezify)
   s.files = %w(
-    README
-    TODO
+    README.md
+    TODO.md
     fezzik.gemspec
     lib/fezzik.rb
     bin/fez
     bin/fezify
   )
+  s.add_dependency("rake", ">=0.8.7")
+  s.add_dependency("rake-remote_task", ">=2.0.2")
 end
