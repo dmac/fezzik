@@ -23,6 +23,9 @@ set :user, "root"
 # You can set environment variables that will be loaded at runtime on the server
 # like this:
 #     env :rack_env, "production"
+# This will also generate a file on the server named config/environment.rb, which you can include
+# in your code to load these variables as Ruby constants. You can create your own config/environment.rb
+# file to use for development, and it will be overwritten at runtime.
 
 destination :dev do
   set :domain, "#\{user\}@dev.example.com"
