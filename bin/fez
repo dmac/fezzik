@@ -3,15 +3,10 @@
 require "rubygems"
 require "rake"
 require "rake/remote_task"
-require "pathname"
+require "fezzik"
 
 # Include everything in config/recipes
 Dir[File.join(Dir.pwd, 'config/recipes/**/*.rb')].sort.each { |lib| require lib }
 
-begin
-  fezzik_dir = Pathname.new($0).realpath.parent.dirname
-  require "#{fezzik_dir}/fezzik"
-  Rake.application["fezzik:run"].invoke
-rescue LoadError
-  puts "    run fezify"
-end
+Rake.application["fezzik:run"].invoke
+
