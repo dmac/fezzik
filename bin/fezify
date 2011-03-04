@@ -69,7 +69,8 @@ namespace :fezzik do
   end
 
   remote_task :push => [:stage, :setup] do
-    rsync "/tmp/#\{app\}/", "#\{target_host\}:#\{release_path\}"
+    puts "pushing to #\{target_host\}"
+    rsync "-q", "/tmp/#\{app\}/", "#\{target_host\}:#\{release_path\}"
   end
 
   remote_task :symlink => :push do
