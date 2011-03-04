@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require "colorize"
 
 files = {
   "config/deploy.rb" => <<-EOF,
@@ -112,7 +113,7 @@ files.each do |filename, content|
   if File.exists?(filename) && ARGV[0] != "-f"
     puts "    [skip] #{filename} already exists"
   else
-    puts "    [new] #{filename} created"
+    puts "    [new] #{filename} created".green
     File.open(filename, "w") { |file| file.write(content) }
     if filename == "bin/run_app.sh"
       system("chmod a+x bin/run_app.sh")
@@ -120,4 +121,4 @@ files.each do |filename, content|
   end
 end
 
-puts "    [done]"
+puts "    [done]".green
