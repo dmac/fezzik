@@ -8,8 +8,15 @@ namespace :fezzik do
     destination = $1 if destination.match(/to_(.+)/)
     tasks = ARGV[1..-1]
     Rake::Task["fezzik:load_config"].invoke destination
-    tasks.each do |task|
-      Rake::Task["fezzik:#{task}"].invoke
+    begin
+      tasks.each do |task|
+        Rake::Task["fezzik:#{task}"].invoke
+      end
+      puts "[success]".green
+    rescue Exception => e
+      puts e.message
+      puts e.backtrace
+      puts "[fail]".red
     end
   end
 
