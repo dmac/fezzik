@@ -1,6 +1,6 @@
 desc "remove built gems"
 task :clean do
-  sh "rm fezzik-*"
+  sh "rm fezzik-*" rescue true
 end
 
 desc "build gem"
