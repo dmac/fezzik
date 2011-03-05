@@ -10,6 +10,7 @@ and gets out of your way.
     sudo gem install fezzik
 
 ## Setup
+
     $ cd myproject
     $ ls
           server.rb
@@ -28,7 +29,7 @@ and gets out of your way.
 
 **bin/run_app.sh**: write a command that will start your app
     #!/bin/sh
-    nohup ruby server.rb &
+    nohup ruby server.rb > /dev/null 2>&1 &
 
 Ready to deploy!
     $ fez to_prod deploy
