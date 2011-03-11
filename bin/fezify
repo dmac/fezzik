@@ -78,7 +78,7 @@ namespace :fezzik do
 
   desc "rsyncs the project from its stages location to each destination server"
   remote_task :push => [:stage, :setup] do
-    puts "pushing to #\{target_host\}"
+    puts "pushing to #\{target_host\}:#\{release_path\}"
     rsync "-q", "/tmp/#\{app\}/", "#\{target_host\}:#\{release_path\}"
   end
 
