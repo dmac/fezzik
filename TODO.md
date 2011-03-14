@@ -7,3 +7,6 @@
 
 ## Bugs
 * symlink task links to a nonexistant directory when run in isolation
+
+## Release Notes
+* copy previous deployment to destination before rsync (for faster rsync)
