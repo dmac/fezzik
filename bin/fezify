@@ -79,9 +79,9 @@ namespace :fezzik do
   desc "rsyncs the project from its stages location to each destination server"
   remote_task :push => [:stage, :setup] do
     puts "pushing to #\{target_host\}:#\{release_path\}"
-    # Copy previous release to optimize rsync
-    run "cp -r #\{deploy_to\}/releases/$(cd #\{deploy_to\}/releases && ls | tail -n 1) #\{release_path\}"
-    rsync "-q", "/tmp/#\{app\}/", "#\{target_host\}:#\{release_path\}"
+    # Copy on top of previous release to optimize rsync
+    rsync "-q", "--copy-dest=#\{deploy_to\}/releases/$(cd #\{deploy_to\}/releases && ls | tail -n 1)",
+          "/tmp/#\{app\}/", "#\{target_host\}:#\{release_path\}"
   end
 
   desc "symlinks the latest deployment to /deploy_path/project/current"
