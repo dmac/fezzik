@@ -80,8 +80,7 @@ namespace :fezzik do
   remote_task :push => [:stage, :setup] do
     puts "pushing to #\{target_host\}:#\{release_path\}"
     # Copy on top of previous release to optimize rsync
-    rsync "-q", "--copy-dest=#\{deploy_to\}/releases/$(cd #\{deploy_to\}/releases && ls | tail -n 1)",
-          "/tmp/#\{app\}/", "#\{target_host\}:#\{release_path\}"
+    rsync "-q", "--copy-dest=#\{current_path\}", "/tmp/#\{app\}/", "#\{target_host\}:#\{release_path\}"
   end
 
   desc "symlinks the latest deployment to /deploy_path/project/current"
