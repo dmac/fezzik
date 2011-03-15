@@ -1,5 +1,7 @@
 ## Features
 * rollback
+* copy unsafe links with rsync
+* rolling restarts
 * parallel execution
 * clear old releases
 * better way to update recipes/core with gem updates
