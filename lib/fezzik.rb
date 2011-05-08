@@ -17,6 +17,7 @@ namespace :fezzik do
       puts e.message
       puts e.backtrace
       puts "[fail]".red
+      exit 1
     end
   end
 
