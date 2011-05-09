@@ -13,7 +13,7 @@ namespace :fezzik do
         Rake::Task["fezzik:#{task}"].invoke
       end
       puts "[success]".green
-    rescue SystemExit => e
+    rescue SystemExit, Rake::CommandFailedError => e
       puts "[fail]".red
       exit 1
     rescue Exception => e
