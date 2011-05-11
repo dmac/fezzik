@@ -27,7 +27,7 @@ namespace :fezzik do
   task :load_config, :destination do |t, args|
     @destination = args[:destination].to_sym
     @environment = {}
-    require "config/deploy.rb"
+    require "./config/deploy.rb"
     puts "configuring for #{domain}"
   end
 
