@@ -28,7 +28,9 @@ namespace :fezzik do
     @destination = args[:destination].to_sym
     @environment = {}
     require "./config/deploy.rb"
-    puts "configuring for #{domain}"
+    servers = domain
+    servers = domain.join(", ") if domain.is_a?(Array)
+    puts "configuring for #{servers}"
   end
 
   # Make the @destination variable visible to tasks
