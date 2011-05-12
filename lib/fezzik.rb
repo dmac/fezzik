@@ -33,11 +33,6 @@ namespace :fezzik do
     puts "configuring for #{servers}"
   end
 
-  # Make the @destination variable visible to tasks
-  def destination
-    @destination
-  end
-
   def destination(target, &block)
     block.call if target == @destination
   end
