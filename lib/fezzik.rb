@@ -13,7 +13,7 @@ namespace :fezzik do
         Rake::Task["fezzik:#{task}"].invoke
       end
       puts "[success]".green
-    rescue SystemExit => e
+    rescue SystemExit, Rake::CommandFailedError => e
       puts "[fail]".red
       exit 1
     rescue Exception => e
@@ -28,7 +28,9 @@ namespace :fezzik do
     @destination = args[:destination].to_sym
     @environment = {}
     require "./config/deploy.rb"
-    puts "configuring for #{domain}"
+    servers = domain
+    servers = domain.join(", ") if domain.is_a?(Array)
+    puts "configuring for #{servers}"
   end
 
   def destination(target, &block)
