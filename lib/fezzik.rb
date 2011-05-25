@@ -40,4 +40,12 @@ namespace :fezzik do
   def env(key, value)
     @environment[key] = value
   end
+
+  def capture_output(&block)
+    output = StringIO.new
+    $stdout = output
+    block.call
+    $stdout = STDOUT
+    output.string
+  end
 end

@@ -38,3 +38,19 @@ Ready to deploy!
     $ fez to_prod deploy
       ...
       fezzik deployed!
+
+## Utilities
+
+Fezzik exposes some utilities that can be useful when running remote tasks.
+
+**capture\_output(&block)**
+
+Use this function if you would like to hide or capture the normal output that the "run" command prints.
+
+    remote_task :my_task
+      # Nothing is printed to stdout
+      server_output = capture_output { run "echo 'hello'"}
+
+      # prints "hello"
+      puts server_output
+    end

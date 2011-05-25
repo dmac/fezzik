@@ -91,7 +91,7 @@ namespace :fezzik do
 
   desc "runs the executable in project/bin"
   remote_task :start do
-    puts "starting from #\{release_path\}"
+    puts "starting from #\{capture_output \{ run \"readlink #\{current_path\}\" \}\}"
     run "cd #\{current_path\} && source config/environment.sh" +
         " && ./bin/run_app.sh"
   end
