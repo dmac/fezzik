@@ -1,6 +1,11 @@
 #
 # A recipe for handling deployment rollbacks.
 #
+# Tasks:
+#  * rollback: interactively rollback (or forward) your live deployment
+#  * rollback_one: rollback to previous deployment
+#  * rollback_to_release: rollback to a specific deployment
+#
 namespace :fezzik do
   desc "interactively roll back deployment"
   task :rollback do
