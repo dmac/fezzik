@@ -54,3 +54,10 @@ Use this function if you would like to hide or capture the normal output that th
       # prints "hello"
       puts server_output
     end
+
+## Recipes
+
+Fezzik uses a recipe system similar to Capistrano. Any recipe placed in your config/recipes directory will be
+picked up and available to the fez command. Some useful recipes that are not part of the fezzik core can be
+found in the fezzik project recipes directory. If you write a general recipe that would be useful to other
+developers, please submit a pull request!
