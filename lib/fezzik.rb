@@ -45,7 +45,8 @@ namespace :fezzik do
     output = StringIO.new
     $stdout = output
     block.call
+    return output.string
+  ensure
     $stdout = STDOUT
-    output.string
   end
 end
