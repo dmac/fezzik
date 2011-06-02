@@ -11,11 +11,9 @@ Dir[File.join(Dir.pwd, 'config/recipes/**/*.rb')].sort.each { |lib| require lib 
 
 def usage
   <<-EOF
-fez [options] <destination> <task>  # run deployment tasks on destination servers
-fez get <recipe>                    # download recipes to use in your project
-
-Options:
-  -T    Display all tasks
+fez <destination> <tasks>  # Run deployment tasks on destination servers
+fez get <recipes>          # Download recipes to use in your project
+fez -T                     # Display all tasks
   EOF
 end
 
