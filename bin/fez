@@ -9,5 +9,28 @@ require "colorize"
 # Include everything in config/recipes
 Dir[File.join(Dir.pwd, 'config/recipes/**/*.rb')].sort.each { |lib| require lib }
 
-Rake.application["fezzik:run"].invoke
+def usage
+  <<-EOF
+fez [options] <destination> <task>  #
 
+Options:
+  -T    Display all tasks
+  EOF
+end
+
+def display_tasks_and_exit
+  Rake.application.options.show_task_pattern = //
+  output = capture_output { Rake.application.display_tasks_and_comments }
+  output.gsub!(/^rake fezzik:/, "fez <destination> ")
+  puts output
+  exit 0
+end
+
+if ARGV.size == 0
+  puts usage
+  exit 1
+elsif ARGV[0] == "-T"
+  display_tasks_and_exit
+end
+
+Rake.application["fezzik:run"].invoke

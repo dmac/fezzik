@@ -1,9 +1,5 @@
 namespace :fezzik do
   task :run do
-    if ARGV.size == 0
-      puts "    Usage: fez to_destination task"
-      exit 1
-    end
     destination = ARGV[0]
     destination = $1 if destination.match(/to_(.+)/)
     tasks = ARGV[1..-1]
