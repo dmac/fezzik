@@ -61,6 +61,6 @@ Fezzik uses a recipe system similar to Capistrano. Any recipe placed in your con
 picked up and available to the fez command. Some useful recipes that are not part of the fezzik core can be
 found in the fezzik project recipes directory. You can download them with fezzik:
 
-    fez get <recipe>
+    fez get <recipes>
 
 If you write a recipe that would be useful to other developers, please submit a pull request!
