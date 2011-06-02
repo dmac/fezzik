@@ -132,7 +132,7 @@ files.each do |filename, content|
   if File.exists?(filename) && ARGV[0] != "-f"
     puts "    [skip] #{filename} already exists"
   else
-    puts "    [new] #{filename} created".green
+    puts "    [new]  #{filename} created".green
     File.open(filename, "w") { |file| file.write(content) }
     if filename == "bin/run_app.sh"
       system("chmod a+x bin/run_app.sh")
