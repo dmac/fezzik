@@ -11,7 +11,8 @@ Dir[File.join(Dir.pwd, 'config/recipes/**/*.rb')].sort.each { |lib| require lib 
 
 def usage
   <<-EOF
-fez [options] <destination> <task>  #
+fez [options] <destination> <task>  # run deployment tasks on destination servers
+fez get <recipe>                    # download recipes to use in your project
 
 Options:
   -T    Display all tasks
@@ -26,11 +27,28 @@ def display_tasks_and_exit
   exit 0
 end
 
+RECIPE_URL = "https://github.com/dmacdougall/fezzik/raw/master/recipes"
+def download_recipes_and_exit
+  system("mkdir -p config/recipes")
+  ARGV[1..-1].each do |recipe|
+    recipe += ".rb" unless recipe[-3..-1] == ".rb"
+    system("curl -f #{RECIPE_URL}/#{recipe} -o config/recipes/#{recipe} > /dev/null 2>&1")
+    if $? == 0
+      puts "    [new]".green + "  config/recipes/#{recipe}"
+    else
+      puts "    [fail]".red + " config/recipes/#{recipe}"
+    end
+  end
+  exit 0
+end
+
 if ARGV.size == 0
   puts usage
   exit 1
 elsif ARGV[0] == "-T"
   display_tasks_and_exit
+elsif ARGV[0] == "get"
+  download_recipes_and_exit
 end
 
 Rake.application["fezzik:run"].invoke

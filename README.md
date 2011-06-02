@@ -15,9 +15,9 @@ and gets out of your way.
     $ ls
           server.rb
     $ fezify
-          [new] bin/run_app.sh created
-          [new] config/recipes/core.rb created
-          [new] config/deploy.rb created
+          [new]  bin/run_app.sh created
+          [new]  config/recipes/core.rb created
+          [new]  config/deploy.rb created
           [done]
 
 **config/deploy.rb**: set your app name and destination servers
@@ -59,5 +59,8 @@ Use this function if you would like to hide or capture the normal output that th
 
 Fezzik uses a recipe system similar to Capistrano. Any recipe placed in your config/recipes directory will be
 picked up and available to the fez command. Some useful recipes that are not part of the fezzik core can be
-found in the fezzik project recipes directory. If you write a general recipe that would be useful to other
-developers, please submit a pull request!
+found in the fezzik project recipes directory. You can download them with fezzik:
+
+    fez get <recipe>
+
+If you write a recipe that would be useful to other developers, please submit a pull request!
