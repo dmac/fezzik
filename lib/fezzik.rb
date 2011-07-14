@@ -2,6 +2,8 @@ namespace :fezzik do
   task :run do
     destination = ARGV[0]
     destination = $1 if destination.match(/to_(.+)/)
+    destination, @domain_override = destination.split(":", 2)
+    @domain_override = @domain_override.split(",") if @domain_override
     tasks = ARGV[1..-1]
     Rake::Task["fezzik:load_config"].invoke destination
     begin
@@ -30,7 +32,13 @@ namespace :fezzik do
   end
 
   def destination(target, &block)
-    block.call if target == @destination
+    if target == @destination
+      block.call
+      if @domain_override
+        @domain_override.map! { |domain| domain.include?("@") ? domain : "#{user}@#{domain}" }
+        set :domain, @domain_override
+      end
+    end
   end
 
   def env(key, value)
