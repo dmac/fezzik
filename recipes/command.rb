@@ -13,12 +13,14 @@ namespace :fezzik do
       print "run command (or \"quit\"): "
       STDOUT.flush
       command = STDIN.gets.chomp
+      next if command.blank?
       if command.downcase == "quit"
         break
       else
         begin
           Rake::Task["fezzik:command_execute"].invoke command
-        rescue Exception
+          Rake::Task["fezzik:command_execute"].reenable
+        rescue Rake::CommandFailedError
         end
       end
     end
