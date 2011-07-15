@@ -25,7 +25,7 @@ def display_tasks_and_exit
   exit 0
 end
 
-RECIPE_URL = "https://github.com/dmacdougall/fezzik/raw/master/recipes"
+RECIPE_URL = "https://raw.github.com/dmacdougall/fezzik/master/recipes"
 def download_recipes_and_exit
   system("mkdir -p config/recipes")
   ARGV[1..-1].each do |recipe|
