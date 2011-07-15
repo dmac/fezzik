@@ -91,6 +91,10 @@ If you write a recipe that would be useful to other developers, please submit a 
 Sometimes you just need to get your hands dirty and run a shell on your servers.
 The command.rb recipe gives you a prompt that lets you execute shell code on each of your hosts.
 
+    $ fez prod command
+    configuring for root@domain.com
+    run command (or "quit"):
+
 ### Rollback
 
     fez get rollback
