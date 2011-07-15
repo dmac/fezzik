@@ -35,7 +35,7 @@ and gets out of your way.
 
 Ready to deploy!
 
-    $ fez to_prod deploy
+    $ fez prod deploy
       ...
       fezzik deployed!
 
@@ -43,7 +43,26 @@ Ready to deploy!
 
 Fezzik exposes some utilities that can be useful when running remote tasks.
 
-**capture\_output(&block)**
+### Host override
+
+Sometimes you'll want to run a fezzik task on a subset of hosts, rather than the full destination fleet.
+You can override what hosts a fezzik task executes on from the command line.
+
+    # deploy to a single host
+    $ fez prod:domain1.com deploy
+
+    # deploy to a single host as root
+    $ fez prod:root@domain1.com deploy
+
+    # deploy to multiple hosts
+    $ fez prod:domain1.com,domain2.com deploy
+
+The overriding hosts don't need to be a subset of the specified destination's domains.
+They can be any hosts you want to use with a destination's configuration.
+
+### Capture or redirect output
+
+    capture_output(&block)
 
 Use this function if you would like to hide or capture the normal output that the "run" command prints.
 
@@ -64,3 +83,27 @@ found in the fezzik project recipes directory. You can download them with fezzik
     fez get <recipes>
 
 If you write a recipe that would be useful to other developers, please submit a pull request!
+
+### Command
+
+    fez get command
+
+Sometimes you just need to get your hands dirty and run a shell on your servers.
+The command.rb recipe gives you a prompt that lets you execute shell code on each of your hosts.
+
+### Rollback
+
+    fez get rollback
+
+Emergency! Rollback! Every deployment you make is saved on the server by default.
+You can move between these deployments (to roll back, for example), with the rollback.rb recipe.
+
+    $ fez prod rollback
+    configuring for root@domain.com
+    === Releases ===
+    0: Abort
+    1: 201107051328 (current)
+    2: 201106231408
+    3: 201106231352
+    Rollback to release (0):
+
