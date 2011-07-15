@@ -93,7 +93,8 @@ The command.rb recipe gives you a prompt that lets you execute shell code on eac
 
     $ fez prod command
     configuring for root@domain.com
-    run command (or "quit"):
+    run command (or "quit"): tail www/myapp/log.txt -n 1
+    [2011-07-01 00:01:23] GET / 200
 
 ### Rollback
 
