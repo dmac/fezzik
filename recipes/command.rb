@@ -8,7 +8,6 @@
 namespace :fezzik do
   desc "interactively run commands on destination servers"
   task :command do
-    target_domain = domain.is_a?(Array) ? domain.first : domain
     while (true) do
       print "run command (or \"quit\"): "
       STDOUT.flush
