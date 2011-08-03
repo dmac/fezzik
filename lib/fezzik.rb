@@ -8,7 +8,8 @@ namespace :fezzik do
     Rake::Task["fezzik:load_config"].invoke destination
     begin
       tasks.each do |task|
-        Rake::Task["fezzik:#{task}"].invoke
+        task, params = split_task_and_params(task)
+        Rake::Task["fezzik:#{task}"].invoke(*params)
       end
       puts "[success]".green
     rescue SystemExit, Rake::CommandFailedError => e
@@ -52,5 +53,17 @@ namespace :fezzik do
     return output.string
   ensure
     $stdout = STDOUT
+  end
+
+  def split_task_and_params(task_with_params)
+    params_match = /(.+)\[(.+)\]/.match(task_with_params)
+    if params_match
+      task = params_match[1]
+      params = params_match[2].split(",")
+    else
+      task = task_with_params
+      params = nil
+    end
+    [task, params]
   end
 end
