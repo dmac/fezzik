@@ -1,3 +1,5 @@
+require "stringio"
+
 namespace :fezzik do
   task :run do
     destination = ARGV[0]
