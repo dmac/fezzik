@@ -7,7 +7,7 @@ and gets out of your way.
 
 ## Install
 
-    sudo gem install fezzik
+    gem install fezzik
 
 ## Setup
 
