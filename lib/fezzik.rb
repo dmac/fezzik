@@ -3,7 +3,7 @@ require "stringio"
 namespace :fezzik do
   task :run do
     destination = ARGV[0]
-    destination = $1 if destination.match(/to_(.+)/)
+    destination = $1 if destination.match(/^to_(.+)/)
     destination, @domain_override = destination.split(":", 2)
     @domain_override = @domain_override.split(",") if @domain_override
     tasks = ARGV[1..-1]
