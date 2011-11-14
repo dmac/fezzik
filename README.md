@@ -96,6 +96,12 @@ The command.rb recipe gives you a prompt that lets you execute shell code on eac
     run command (or "quit"): tail www/myapp/log.txt -n 1
     [2011-07-01 00:01:23] GET / 200
 
+You can also run a single command:
+
+    $ fez prod command_execute\['ls'\]
+
+(You'll probably need to escape the `[]` in your shell as well.)
+
 ### Rollback
 
     fez get rollback
