@@ -10,6 +10,6 @@ end
 
 desc "install gem"
 task :install => [:clean, :build] do
-  sh "sudo gem install `ls fezzik-*`"
+  sh "gem install `ls fezzik-*`"
 end
 
