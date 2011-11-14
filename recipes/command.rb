@@ -8,12 +8,12 @@
 namespace :fezzik do
   desc "interactively run commands on destination servers"
   task :command do
-    while (true) do
+    loop do
       print "run command (or \"quit\"): "
       STDOUT.flush
       command = STDIN.gets.chomp
-      next if command.blank?
-      if command.downcase == "quit"
+      next if command.empty?
+      if ["quit", "q", "exit"].include? command.downcase
         break
       else
         begin
@@ -27,7 +27,5 @@ namespace :fezzik do
   end
 
   desc "run a single command on destination servers"
-  remote_task :command_execute, :command do |t, args|
-    run args[:command]
-  end
+  remote_task(:command_execute, :command) { |t, args| run args[:command] }
 end
