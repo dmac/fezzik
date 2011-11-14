@@ -29,7 +29,7 @@ namespace :fezzik do
     @destination = args[:destination].to_sym
     @environment = {}
     require "./config/deploy.rb"
-    @servers = domain.is_a?(Array) ? domain : domain.split(",").map(:strip)
+    @servers = domain.is_a?(Array) ? domain : domain.split(",").map(&:strip)
     compute_environment_per_server
     puts "configuring for #{@servers.join(", ")}"
   end
@@ -48,9 +48,7 @@ namespace :fezzik do
   # (these should match names given in :domain). If servers is not given, then this environment variable
   # applies to all servers.
   def env(key, value, servers = nil)
-    if servers
-      servers = [servers] unless servers.is_a? Array
-    end
+    servers = Array(servers) if servers
     @environment[[key, servers]] = value
   end
 
