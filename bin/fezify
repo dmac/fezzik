@@ -60,7 +60,10 @@ namespace :fezzik do
       root_config_dir = "/tmp/#{app}/#{server}_config"
       FileUtils.mkdir_p root_config_dir
       File.open(File.join(root_config_dir, "environment.rb"), "w") do |file|
-        environment.each { |key, value| file.puts %[#{key.to_s.upcase} = "#{value}"] }
+        environment.each do |key, value|
+          quote = value.is_a?(Numeric) ? '' : '"'
+          file.puts "#{key.to_s.upcase} = #{quote}#{value}#{quote}"
+        end
       end
       File.open(File.join(root_config_dir, "environment.sh"), "w") do |file|
         environment.each { |key, value| file.puts %[export #{key.to_s.upcase}="#{value}"] }
