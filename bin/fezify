@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 require "colorize"
+require "fileutils"
 
 files = {
   "config/deploy.rb" => <<-'EOF',
@@ -14,7 +15,6 @@ set :release_path, "#{deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
 set :local_path, Dir.pwd
 set :user, "root"
 
-
 # Each destination is a set of machines and configurations to deploy to.
 # You can deploy to a destination from the command line with:
 #     fez to_dev deploy
@@ -24,6 +24,11 @@ set :user, "root"
 # You can set environment variables that will be loaded at runtime on the server
 # like this:
 #     env :rack_env, "production"
+# or
+#     env :error_monitoring, "true", ["prod12.com"]
+# The second form specifies an environment variable particular to a server or list of servers (as a subset of
+# the :domain list).
+#
 # This will also generate a file on the server named config/environment.rb, which you can include
 # in your code to load these variables as Ruby constants. You can create your own config/environment.rb
 # file to use for development, and it will be overwritten at runtime.
@@ -38,6 +43,8 @@ end
   EOF
 
   "config/recipes/core.rb" => <<-'EOF',
+require "fileutils"
+
 # This file contains core tasks that are used to deploy your application to the
 # destination servers. This is a decent initial setup, but is completely configurable.
 
@@ -49,15 +56,14 @@ namespace :fezzik do
   # and it will be overwritten by this task when the code deploys.
   desc "saves variables set by 'env' in deploy.rb into config/environment.sh and config/environment.rb"
   task :save_environment do
-    system("mkdir -p /tmp/#{app}/config")
-    File.open("/tmp/#{app}/config/environment.rb", "w") do |file|
-      @environment.each do |key, value|
-        file.puts "#{key.to_s.upcase}=\"#{value}\""
+    @per_server_environments.each do |server, environment|
+      root_config_dir = "/tmp/#{app}/#{server}_config"
+      FileUtils.mkdir_p root_config_dir
+      File.open(File.join(root_config_dir, "environment.rb"), "w") do |file|
+        environment.each { |key, value| file.puts %[#{key.to_s.upcase} = "#{value}"] }
       end
-    end
-    File.open("/tmp/#{app}/config/environment.sh", "w") do |file|
-      @environment.each do |key, value|
-        file.puts "export #{key.to_s.upcase}=\"#{value}\""
+      File.open(File.join(root_config_dir, "environment.sh"), "w") do |file|
+        environment.each { |key, value| file.puts %[export #{key.to_s.upcase}="#{value}"] }
       end
     end
   end
@@ -65,8 +71,9 @@ namespace :fezzik do
   desc "stages the project for deployment in /tmp"
   task :stage do
     puts "staging project in /tmp/#{app}"
-    system("rm -fr /tmp/#{app}")
-    system("cp -r #{local_path} /tmp/#{app}")
+    FileUtils.rm_rf "/tmp/#{app}"
+    FileUtils.mkdir_p "/tmp/#{app}/staged"
+    FileUtils.cp_r "#{local_path}/.", "/tmp/#{app}/staged"
     Rake::Task["fezzik:save_environment"].invoke
   end
 
@@ -80,7 +87,12 @@ namespace :fezzik do
   remote_task :push => [:stage, :setup] do
     puts "pushing to #{target_host}:#{release_path}"
     # Copy on top of previous release to optimize rsync
-    rsync "-q", "--copy-dest=#{current_path}", "/tmp/#{app}/", "#{target_host}:#{release_path}"
+    rsync "-q", "--copy-dest=#{current_path}", "/tmp/#{app}/staged/", "#{target_host}:#{release_path}"
+    # Copy over the appropriate configs for the target
+    ["environment.rb", "environment.sh"].each do |config_file|
+      rsync "-q", "/tmp/#{app}/#{target_host}_config/#{config_file}",
+            "#{target_host}:#{release_path}/config/#{config_file}"
+    end
   end
 
   desc "symlinks the latest deployment to /deploy_path/project/current"
@@ -124,8 +136,8 @@ end
   EOF
 }
 
-system("mkdir -p config/recipes")
-system("mkdir -p bin")
+FileUtils.mkdir_p "config/recipes"
+FileUtils.mkdir_p "bin"
 
 files.each do |filename, content|
   if File.exists?(filename) && ARGV[0] != "-f"
@@ -133,9 +145,7 @@ files.each do |filename, content|
   else
     puts "    [new]  #{filename} created".green
     File.open(filename, "w") { |file| file.write(content) }
-    if filename == "bin/run_app.sh"
-      system("chmod a+x bin/run_app.sh")
-    end
+    system("chmod a+x bin/run_app.sh") if filename == "bin/run_app.sh"
   end
 end
 

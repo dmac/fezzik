@@ -29,9 +29,9 @@ namespace :fezzik do
     @destination = args[:destination].to_sym
     @environment = {}
     require "./config/deploy.rb"
-    servers = domain
-    servers = domain.join(", ") if domain.is_a?(Array)
-    puts "configuring for #{servers}"
+    @servers = domain.is_a?(Array) ? domain : domain.split(",").map(:strip)
+    compute_environment_per_server
+    puts "configuring for #{@servers.join(", ")}"
   end
 
   def destination(target, &block)
@@ -44,8 +44,29 @@ namespace :fezzik do
     end
   end
 
-  def env(key, value)
-    @environment[key] = value
+  # If servers is given, then this environment variable will only apply to that server (or array of servers)
+  # (these should match names given in :domain). If servers is not given, then this environment variable
+  # applies to all servers.
+  def env(key, value, servers = nil)
+    if servers
+      servers = [servers] unless servers.is_a? Array
+    end
+    @environment[[key, servers]] = value
+  end
+
+  def compute_environment_per_server
+    @per_server_environments = Hash.new { |h, k| h[k] = {} }
+    @environment.each do |k, value|
+      key, servers = k
+      if servers
+        # Allow the user to provide "user@host.com" or "host.com" when identifying servers for per-server
+        # environment variables.
+        applicable_servers = @servers.select { |s1| servers.any? { |s2| s1 == s2 || s1.end_with?(s2) } }
+      else
+        applicable_servers = @servers
+      end
+      applicable_servers.each { |s| @per_server_environments[s][key] = value }
+    end
   end
 
   def capture_output(&block)
