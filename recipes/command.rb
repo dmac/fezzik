@@ -11,7 +11,13 @@ namespace :fezzik do
     loop do
       print "run command (or \"quit\"): "
       STDOUT.flush
-      command = STDIN.gets.chomp
+      input = STDIN.gets
+      # Exit gracefully on <C-D>
+      if input.nil?
+        puts
+        break
+      end
+      command = input.chomp
       next if command.empty?
       if ["quit", "q", "exit"].include? command.downcase
         break
