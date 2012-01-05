@@ -92,8 +92,9 @@ namespace :fezzik do
     # Copy on top of previous release to optimize rsync
     rsync "-q", "--copy-dest=#{current_path}", "/tmp/#{app}/staged/", "#{target_host}:#{release_path}"
     # Copy over the appropriate configs for the target
+    server = target_host.gsub(/^.*@/, "")
     ["environment.rb", "environment.sh"].each do |config_file|
-      rsync "-q", "/tmp/#{app}/#{target_host}_config/#{config_file}",
+      rsync "-q", "/tmp/#{app}/#{server}_config/#{config_file}",
             "#{target_host}:#{release_path}/config/#{config_file}"
     end
   end
