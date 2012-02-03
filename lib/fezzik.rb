@@ -5,8 +5,9 @@ require "rake/remote_task"
 
 $:.unshift(File.dirname(__FILE__))
 require "fezzik/base.rb"
-require "fezzik/io.rb"
 require "fezzik/environment.rb"
+require "fezzik/io.rb"
+require "fezzik/util.rb"
 
 #namespace :fezzik do
   #task :run do
@@ -73,15 +74,6 @@ require "fezzik/environment.rb"
       #end
       #applicable_servers.each { |s| @per_server_environments[s][key] = value }
     #end
-  #end
-
-  #def capture_output(&block)
-    #output = StringIO.new
-    #$stdout = output
-    #block.call
-    #return output.string
-  #ensure
-    #$stdout = STDOUT
   #end
 
   #def split_task_and_params(task_with_params)
