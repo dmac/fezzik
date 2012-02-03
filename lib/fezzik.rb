@@ -6,6 +6,7 @@ require "rake/remote_task"
 $:.unshift(File.dirname(__FILE__))
 require "fezzik/base.rb"
 require "fezzik/io.rb"
+require "fezzik/environment.rb"
 
 #namespace :fezzik do
   #task :run do
