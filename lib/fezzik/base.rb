@@ -1,14 +1,14 @@
 module Fezzik
   def self.init(options={})
     @options = options
-    @selected_destination = ENV["fezzik_destination"].to_sym
+    @selected_destination = ENV["fezzik_destination"].to_sym rescue nil
     unless @options[:config].nil?
       puts "Loading Fezzik config from #{@options[:config]}"
       require File.join(Dir.pwd, @options[:config]) if @options[:config]
     end
     unless options[:tasks].nil?
       puts "Loading Fezzik tasks from #{@options[:tasks]}"
-      Dir[File.join(Dir.pwd, "#{options[:tasks]}/**/*.rb")].sort.each { |lib| require lib }
+      Dir[File.join(Dir.pwd, "#{@options[:tasks]}/**/*.rake")].sort.each { |lib| import lib }
     end
   end
 
