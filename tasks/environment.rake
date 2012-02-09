@@ -1,10 +1,9 @@
 require "fileutils"
 
 # Any variables set in deploy.rb with `Fezzik.env` will be saved on the server in two files:
-# config/environment.sh and config/environment.rb. The first is loaded into the shell
-# environment before the run script is called, and the second is made available to
-# be required into your code. You can use your own environment.rb file for development,
-# and it will be overwritten by this task when the code deploys.
+# environment.sh and environment.rb. The first can be loaded into the shell environment before the run script
+# is called, and the second is made available to be required into your code. You can use your own
+# environment.rb file for development and it will be overwritten by this task when the code deploys.
 namespace :fezzik do
   desc "saves variables set by `Fezzik.env` into a local staging area before deployment"
   task :save_environment do
@@ -37,7 +36,7 @@ namespace :fezzik do
     server = target_host.gsub(/^.*@/, "")
     ["environment.rb", "environment.sh"].each do |config_file|
       rsync "-q", "/tmp/#{app}/#{server}_config/#{config_file}",
-            "#{target_host}:#{release_path}/config/#{config_file}"
+            "#{target_host}:#{release_path}/#{config_file}"
     end
   end
 end
