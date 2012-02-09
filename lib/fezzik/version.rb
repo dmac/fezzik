@@ -1,3 +1,3 @@
 module Fezzik
-  VERSION = "0.5.2.1"
+  VERSION = "0.6.0"
 end
