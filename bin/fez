@@ -7,6 +7,7 @@ require "fezzik"
 
 def usage
   <<-EOF
+Version #{Fezzik::VERSION}
 fez <destination> <tasks>  # Run deployment tasks on destination servers
 fez get <recipes>          # Download recipes to use in your project
 fez -T                     # Display all tasks
