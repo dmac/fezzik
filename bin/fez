@@ -49,10 +49,12 @@ end
 
 def run_fezzik_tasks
   ENV["fezzik_destination"] = ARGV[0]
+  Fezzik.init
   Rake.application.init
   Rake.application.load_rakefile
-  Fezzik.init
   tasks = ARGV[1..-1]
+  puts "Targeting hosts:"
+  puts "  #{Array(domain).join("\n")}"
   begin
     tasks.each do |task_with_params|
       task, params = Fezzik::Util.split_task_and_params(task_with_params)
