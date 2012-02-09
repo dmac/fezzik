@@ -9,29 +9,32 @@ def usage
   <<-EOF
 Version #{Fezzik::VERSION}
 fez <destination> <tasks>  # Run deployment tasks on destination servers
-fez get <recipes>          # Download recipes to use in your project
+fez get <tasks>            # Download tasks to use in your project
 fez -T                     # Display all tasks
   EOF
 end
 
 def display_tasks_and_exit
-  Rake.application.options.show_task_pattern = //
-  output = capture_output { Rake.application.display_tasks_and_comments }
+  Rake.application.init
+  Rake.application.load_rakefile
+  Rake.application.options.show_task_pattern = /^fezzik:/
+  output = Fezzik::Util.capture_output { Rake.application.display_tasks_and_comments }
   output.gsub!(/^rake fezzik:/, "fez <destination> ")
   puts output
   exit 0
 end
 
-RECIPE_URL = "https://raw.github.com/dmacdougall/fezzik/master/recipes"
-def download_recipes_and_exit
-  system("mkdir -p config/recipes")
-  ARGV[1..-1].each do |recipe|
-    recipe += ".rb" unless recipe[-3..-1] == ".rb"
-    system("curl -f #{RECIPE_URL}/#{recipe} -o config/recipes/#{recipe} > /dev/null 2>&1")
+TASKS_URL = "https://raw.github.com/dmacdougall/fezzik/master/tasks"
+def download_tasks_and_exit
+  # TODO: Allow specifying destination for tasks
+  system("mkdir -p config/tasks")
+  ARGV[1..-1].each do |task|
+    task += ".rake" unless task =~ /\.rake$/
+    system("curl -f #{TASKS_URL}/#{task} -o config/tasks/#{task} > /dev/null 2>&1")
     if $? == 0
-      puts "    [new]".green + "  config/recipes/#{recipe}"
+      puts "    [new]".green + "  config/tasks/#{task}"
     else
-      puts "    [fail]".red + " config/recipes/#{recipe}"
+      puts "    [fail]".red + " config/tasks/#{task}"
     end
   end
   exit 0
@@ -43,7 +46,7 @@ if ARGV.size == 0
 elsif ARGV[0] == "-T"
   display_tasks_and_exit
 elsif ARGV[0] == "get"
-  download_recipes_and_exit
+  download_tasks_and_exit
 end
 
-Rake.application["fezzik:run"].invoke
+Fezzik.init
