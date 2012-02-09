@@ -1,9 +1,11 @@
 # Fezzik
 
-Fezzik (or fez) is a slim and snappy alternative to Capistrano.
+Fezzik (or fez) is a slim and snappy way to run commands on servers.
+This is useful for many things, including deployment.
 
-It sets up a rake-based rsync workflow with a single configuration file
-and gets out of your way.
+It wraps a rake-based rsync workflow and tries to keep it simple.
+
+**NOTE**: As of 2/8/12 this README is out of date. It will be updated shortly.
 
 ## Install
 
