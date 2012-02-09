@@ -57,9 +57,9 @@ def run_fezzik_tasks
   Rake.application.init
   Rake.application.load_rakefile
   begin
-    host_list = Array(domain).join("\n")
+    host_list = Array(domain).join("\n    ")
     puts "Targeting hosts:"
-    puts "  #{host_list}"
+    puts "    #{host_list}"
   rescue Rake::ConfigurationError => e
     puts "Invalid destination: #{Fezzik.target_destination}"
     puts "Make sure this destination is configured and includes `set :domain, \"yourdomain.com\"`"
