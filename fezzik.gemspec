@@ -13,7 +13,8 @@ Gem::Specification.new do |s|
   s.email = "dmacdougall@gmail.com"
 
   s.description = "A light deployment system that gets out of your way"
-  s.summary = "A light deployment system that gets out of your way"
+  s.summary = "Fezzik is a small wrapper around rake/remote_task. It simplifies running commands on" +
+      "remote servers and can be used for anything from deploying code to installing libraries remotely."
   s.homepage = "http://github.com/dmacdougall/fezzik"
   s.rubyforge_project = "fezzik"
 
