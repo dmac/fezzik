@@ -1,4 +1,3 @@
-# TODO: Write .rake file for saving per-server configs
 module Fezzik
   def self.env(key, value, options={})
     options = {
