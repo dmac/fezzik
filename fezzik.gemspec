@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/dmacdougall/fezzik"
   s.rubyforge_project = "fezzik"
 
-  s.executables = %w(fez fezify)
+  s.executables = %w(fez)
   s.files = `git ls-files`.split("\n")
 
   s.add_dependency("rake", "~>0.8.7")
