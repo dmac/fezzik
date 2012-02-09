@@ -7,6 +7,7 @@ require "fezzik"
 
 # TODO: Add a handy "fez init" command to set up a basic deployable directory structure
 # TODO: Think about how to do domain overrides better
+# TODO: Update README
 
 def usage
   <<-EOF
