@@ -1,7 +1,6 @@
 # TODO: Write .rake file for saving per-server configs
 module Fezzik
   def self.env(key, value, options={})
-    # TODO: Should be able to specify either domain.com or user@domain.com
     options = {
       :hosts => domain
     }.merge(options)
