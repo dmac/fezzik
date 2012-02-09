@@ -17,6 +17,11 @@ fez -T                     # Display all tasks
   EOF
 end
 
+def print_usage_and_exit
+  puts usage
+  exit 1
+end
+
 def display_tasks_and_exit
   Rake.application.init
   Rake.application.load_rakefile
@@ -43,13 +48,20 @@ def download_tasks_and_exit
   exit 0
 end
 
-if ARGV.size == 0
-  puts usage
-  exit 1
-elsif ARGV[0] == "-T"
-  display_tasks_and_exit
-elsif ARGV[0] == "get"
-  download_tasks_and_exit
+def run_fezzik_tasks
+  ENV["fezzik_destination"] = ARGV[0]
+  Rake.application.init
+  Rake.application.load_rakefile
+  Fezzik.init
+  tasks = ARGV[1..-1]
+  tasks.each do |task|
+    Rake::Task["fezzik:#{task}"].invoke
+  end
 end
 
-Fezzik.init
+case ARGV[0]
+when nil then print_usage_and_exit
+when "-T" then display_tasks_and_exit
+when "get" then download_tasks_and_exit
+else run_fezzik_tasks
+end
