@@ -5,6 +5,9 @@ require "rake"
 require "colorize"
 require "fezzik"
 
+# TODO: Think about how to do domain overrides better
+# TODO: Parameters to tasks
+
 def usage
   <<-EOF
 Version #{Fezzik::VERSION}

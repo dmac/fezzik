@@ -11,9 +11,6 @@ require "fezzik/io.rb"
 require "fezzik/util.rb"
 require "fezzik/version.rb"
 
-# TODO: Think about how to do domain overrides better
-# TODO: Parameters to tasks
-
 #namespace :fezzik do
   #task :run do
     #destination = ARGV[0]
