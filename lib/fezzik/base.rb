@@ -1,7 +1,7 @@
 module Fezzik
   def self.init(options={})
     @options = options
-    @selected_destination = ENV["fezzik_destination"].to_sym rescue nil
+    @target_destination = ENV["fezzik_destination"].to_sym rescue nil
     unless @options[:config].nil?
       puts "Loading Fezzik config from #{@options[:config]}"
       require File.join(Dir.pwd, @options[:config]) if @options[:config]
@@ -14,6 +14,10 @@ module Fezzik
 
   # TODO: add domain override (through environment variable?)
   def self.destination(name, &block)
-    block.call if name == @selected_destination
+    block.call if name == @target_destination
+  end
+
+  def self.target_destination
+    @target_destination ||= nil
   end
 end
