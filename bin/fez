@@ -33,7 +33,7 @@ end
 
 TASKS_URL = "https://raw.github.com/dmacdougall/fezzik/master/tasks"
 def download_tasks_and_exit
-  # TODO: Allow specifying destination for tasks
+  # TODO: Allow specifying where to download tasks to
   system("mkdir -p config/tasks")
   ARGV[1..-1].each do |task|
     task += ".rake" unless task =~ /\.rake$/
