@@ -53,9 +53,20 @@ def run_fezzik_tasks
   Rake.application.load_rakefile
   Fezzik.init
   tasks = ARGV[1..-1]
-  tasks.each do |task_with_params|
-    task, params = Fezzik::Util.split_task_and_params(task_with_params)
-    Rake::Task["fezzik:#{task}"].invoke(params)
+  begin
+    tasks.each do |task_with_params|
+      task, params = Fezzik::Util.split_task_and_params(task_with_params)
+      Rake::Task["fezzik:#{task}"].invoke(params)
+    end
+    puts "[success]".green
+  rescue SystemExit, Rake::CommandFailedError => e
+    puts "[fail]".red
+    exit 1
+  rescue StandardError => e
+    puts e.message
+    puts e.backtrace
+    puts "[fail]".red
+    fail
   end
 end
 
