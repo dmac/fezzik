@@ -33,7 +33,7 @@ end
 
 Run your remote_tasks with fezzik:
 
-```sh
+```
 $ fez prod touch
 ```
 
@@ -68,7 +68,7 @@ end
 Fezzik comes bundled with some useful rake tasks for common things like deployment.
 You can download the ones you need:
 
-```sh
+```
 $ cd config/tasks
 $ fez get deploy
     [new] deploy.rake
@@ -97,7 +97,7 @@ end
 
 Deploy win!
 
-```sh
+```
 $ fez prod deploy
 ...
 myapp deployed!
@@ -108,7 +108,7 @@ myapp deployed!
 
 Configuration often changes when you deploy your project. Fezzik lets you set environments for your hosts.
 
-```sh
+```
 $ cd config/tasks
 $ fez get environment
     [new] environment.rake
@@ -195,7 +195,7 @@ If you write a recipe that would be useful to other developers, please submit a 
 
 ### Command
 
-```sh
+```
 $ cd config/tasks
 $ fez get command
     [new] command.rake
@@ -204,7 +204,7 @@ $ fez get command
 Sometimes you just need to get your hands dirty and run a shell on your servers.
 The command.rake tasks give you a prompt that lets you execute shell code on each of your hosts.
 
-```sh
+```
 $ fez prod command
 Targeting hosts:
     root@myapp.com
@@ -214,13 +214,13 @@ run command (or "quit"): tail www/myapp/log.txt -n 1
 
 You can also run a single command:
 
-```sh
+```
 $ fez prod "command_execute[ls]"
 ```
 
 ### Rollback
 
-```sh
+```
 $ cd config/tasks
 $ fez get rollback
     [new] rollback.rake
@@ -229,7 +229,7 @@ $ fez get rollback
 Emergency! Rollback! Every deployment you make is saved on the server by default.
 You can move between these deployments (to roll back, for example), with the rollback.rb recipe.
 
-```sh
+```
 $ fez prod rollback
 configuring for root@myapp.com
 === Releases ===
