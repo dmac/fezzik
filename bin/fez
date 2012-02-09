@@ -6,7 +6,6 @@ require "colorize"
 require "fezzik"
 
 # TODO: Think about how to do domain overrides better
-# TODO: Parameters to tasks
 
 def usage
   <<-EOF
@@ -54,8 +53,9 @@ def run_fezzik_tasks
   Rake.application.load_rakefile
   Fezzik.init
   tasks = ARGV[1..-1]
-  tasks.each do |task|
-    Rake::Task["fezzik:#{task}"].invoke
+  tasks.each do |task_with_params|
+    task, params = Fezzik::Util.split_task_and_params(task_with_params)
+    Rake::Task["fezzik:#{task}"].invoke(params)
   end
 end
 
