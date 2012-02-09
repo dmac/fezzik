@@ -3,8 +3,6 @@ require "thread"
 require "rake"
 require "rake/remote_task"
 require "colorize"
-
-$:.unshift(File.dirname(__FILE__))
 require "fezzik/base.rb"
 require "fezzik/environment.rb"
 require "fezzik/io.rb"
