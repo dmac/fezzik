@@ -2,12 +2,8 @@
 
 require "rubygems"
 require "rake"
-require "rake/remote_task"
-require "fezzik"
 require "colorize"
-
-# Include everything in config/recipes
-Dir[File.join(Dir.pwd, 'config/recipes/**/*.rb')].sort.each { |lib| require lib }
+require "fezzik"
 
 def usage
   <<-EOF
