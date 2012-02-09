@@ -7,7 +7,9 @@ require "fezzik"
 
 # TODO: Add a handy "fez init" command to set up a basic deployable directory structure
 # TODO: Think about how to do domain overrides better
-# TODO: Update README
+# TODO: Add Fezzik::DSL so you can say env or destination instead of Fezzik.env, Fezzik.destination
+# TODO: tasks should download to current directory
+# TODO: environment configs should be uploaded to root directory by default
 
 def usage
   <<-EOF
