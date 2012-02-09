@@ -8,7 +8,6 @@ require "fezzik"
 # TODO: Add a handy "fez init" command to set up a basic deployable directory structure
 # TODO: Think about how to do domain overrides better
 # TODO: Add Fezzik::DSL so you can say env or destination instead of Fezzik.env, Fezzik.destination
-# TODO: tasks should download to current directory
 # TODO: environment configs should be uploaded to root directory by default
 
 def usage
@@ -37,15 +36,13 @@ end
 
 TASKS_URL = "https://raw.github.com/dmacdougall/fezzik/master/tasks"
 def download_tasks_and_exit
-  # TODO: Allow specifying where to download tasks to
-  system("mkdir -p config/tasks")
   ARGV[1..-1].each do |task|
     task += ".rake" unless task =~ /\.rake$/
-    system("curl -f #{TASKS_URL}/#{task} -o config/tasks/#{task} > /dev/null 2>&1")
+    system("curl -f #{TASKS_URL}/#{task} -o #{task} > /dev/null 2>&1")
     if $? == 0
-      puts "    [new]".green + "  config/tasks/#{task}"
+      puts "    [new]".green + "  #{task}"
     else
-      puts "    [fail]".red + " config/tasks/#{task}"
+      puts "    [fail]".red + " #{task}"
     end
   end
   exit 0
