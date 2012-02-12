@@ -183,6 +183,28 @@ task :print_destination
 end
 ```
 
+
+## DSL
+
+Fezzik comes with a DSL module that you can optionally include in the top level of your Rakefiles. It exposes
+the following functions:
+
+```
+destination
+env
+capture_output
+```
+
+This lets you write your configuration more tersely:
+
+```ruby
+include Fezzik::DSL
+
+destination :prod do
+  env :rack_env, "production"
+end
+```
+
 ## Tasks
 
 Fezzik has a number of useful tasks other than deploy.rake and environment.rake. These can also be downloaded
