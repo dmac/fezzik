@@ -8,8 +8,8 @@ module Fezzik
       Fezzik.env(*args)
     end
 
-    def capture_output(*args)
-      Fezzik::Util.capture_output(*args)
+    def capture_output(&block)
+      Fezzik::Util.capture_output(&block)
     end
   end
 end
