@@ -81,7 +81,7 @@ def run_fezzik_tasks
 end
 
 case ARGV[0]
-when nil then print_usage_and_exit
+when nil, "-h" then print_usage_and_exit
 when "-T" then display_tasks_and_exit
 when "get" then download_tasks_and_exit
 else run_fezzik_tasks
