@@ -1,9 +1,9 @@
 # Fezzik
 
 Fezzik (or fez) is a slim and snappy way to run commands on servers.
-This is useful for many things, including deployment.
+This is useful for many tasks, including deployment.
 
-It wraps a rake-based rsync workflow and tries to keep it simple.
+It wraps a rake-based rsync workflow and tries to keep things simple.
 
 ## Install
 
