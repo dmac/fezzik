@@ -9,6 +9,10 @@ require "fezzik"
 # TODO: Think about how to do domain overrides better
 # TODO: Add Fezzik::DSL so you can say env or destination instead of Fezzik.env, Fezzik.destination
 
+# This constant can be used to determine whether fezzik is being used. You can use this, for example, to only
+# load fezzik tasks in your Rakefile when running `fez ...` and not `rake ...`.
+FEZZIK_ACTIVATED = true
+
 def usage
   <<-EOF
 Version #{Fezzik::VERSION}
