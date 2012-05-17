@@ -1,4 +1,10 @@
 module Fezzik
+  @activated = false
+  class << self
+    attr_accessor :activated
+  end
+  def self.activated?() @activated end
+
   def self.init(options={})
     @options = options
     @target_destination = ENV["fezzik_destination"].to_sym rescue nil
