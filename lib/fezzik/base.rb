@@ -1,9 +1,6 @@
 module Fezzik
-  @activated = false
-  class << self
-    attr_accessor :activated
-  end
-  def self.activated?() @activated end
+  def self.activated=(value) @activated = value end
+  def self.activated?() @activated || false end
 
   def self.init(options={})
     @options = options
