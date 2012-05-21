@@ -49,19 +49,21 @@ def download_tasks_and_exit
   exit 0
 end
 
+# This ensures `domain` is always an Array. In addition, if `user` is set it will automatically prepend the
+# value of `user` to the front of any domains missing a username. This allows a fezzik user to write the
+# following in their configuration and have it "just work":
+#     set :domain, ["example.com", "test@example2.com"]
+#     set :user, "root"
+# `domain` will be equal to ["root@example.com", "test@example2.com"]
+def prepend_user_to_domains
+  set :domain, Array(domain).map { |d| (defined?(user) && !d.include?("@")) ? "#{user}@#{d}" : d }
+end
+
 def load_configuration
   ENV["fezzik_destination"] = ARGV[0]
   Fezzik.init
   Rake.application.init
   Rake.application.load_rakefile
-
-  # This ensures `domain` is always an Array. In addition, if `user` is set it will automatically prepend the
-  # value of `user` to the front of any domains missing a username. This allows a fezzik user to write the
-  # following in their configuration and have it "just work":
-  #     set :domain, ["example.com", "test@example2.com"]
-  #     set :user, "root"
-  # `domain` will be equal to ["root@example.com", "test@example2.com"]
-  set :domain, Array(domain).map { |d| (defined?(user) && !d.include?("@")) ? "#{user}@#{d}" : d }
 end
 
 def run_fezzik_tasks
@@ -79,8 +81,20 @@ def run_fezzik_tasks
   begin
     tasks = ARGV[1..-1]
     tasks.each do |task_with_params|
-      task, params = Fezzik::Util.split_task_and_params(task_with_params)
-      Rake::Task["fezzik:#{task}"].invoke(params)
+      task_name, params = Fezzik::Util.split_task_and_params(task_with_params)
+      task_name = task_name.to_sym
+      task = Rake::Task["fezzik:#{task_name}"]
+      if Fezzik.task_roles[task_name].nil?
+        prepend_user_to_domains
+        task.invoke(params)
+      else
+        Fezzik.task_roles[task_name].each do |role|
+          Fezzik.with_role(role) do
+            prepend_user_to_domains
+            task.invoke(params)
+          end
+        end
+      end
     end
     puts "[success]".green
   rescue SystemExit, Rake::CommandFailedError => e
