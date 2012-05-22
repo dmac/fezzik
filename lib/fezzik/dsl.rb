@@ -1,6 +1,6 @@
 module Fezzik
   module DSL
-    # This is necessary to override Rake::RemoteTasks's globally eval'ed method definitions.
+    # This is necessary to override Rake::RemoteTask's globally eval'ed method definitions.
     def self.included(klass)
       klass.class_eval do
         def role(*args) Fezzik.role(*args) end
