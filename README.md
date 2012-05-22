@@ -17,7 +17,8 @@ Require Fezzik in your project Rakefile and define a destination:
 require "fezzik"
 
 Fezzik.destination :prod do
-  set :domain, "root@myapp.com"
+  set :user, "root"
+  set :domain, "myapp.com"
 end
 ```
 
@@ -57,11 +58,11 @@ set :local_path, Dir.pwd
 set :user, "root"
 
 Fezzik.destination :staging do
-  set :domain, "#{user}@myapp-staging.com"
+  set :domain, "myapp-staging.com"
 end
 
 Fezzik.destination :prod do
-  set :domain, "#{user}@myapp.com"
+  set :domain, "myapp.com"
 end
 ```
 
@@ -116,7 +117,7 @@ $ fez get environment
 
 ```ruby
 Fezzik.destination :prod do
-  set :domain, "#{user}@myapp.com"
+  set :domain, "myapp.com"
   Fezzik.env :rack_env, "production"
 end
 ```
@@ -137,7 +138,7 @@ You can assign different environments to a subset of the hosts you deploy to.
 
 ```ruby
 Fezzik.destination :prod do
-  set :domain, ["#{user}@myapp1.com", "#{user}@myapp2.com"]
+  set :domain, ["myapp1.com", "myapp2.com"]
   Fezzik.env :rack_env, "production"
   Fezzik.env :is_canary, "true", :hosts => ["myapp1.com"]
 end
