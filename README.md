@@ -166,11 +166,11 @@ Fezzik.destination :prod do
   Fezzik.role :run_user, :user => "app"
 end
 
-Fezzik.remote_task :install, :roles => :root_user
+remote_task :install, :roles => :root_user
   # Install all the things.
 end
 
-Fezzik.remote_task :run, :roles => :run_user
+remote_task :run, :roles => :run_user
   # Run all the things.
 end
 ```
@@ -195,13 +195,9 @@ Fezzik.destination :prod do
 end
 ```
 
-The `role` method accepts a role name and a hash of values that you want assigned with the
+The `Fezzik.role` method accepts a role name and a hash of values that you want assigned with the
 `set :var, value` syntax. These will override the global or destination settings when that remote_task is
 run.
-
-Note that roles require `Fezzik.remote_task` instead of `remote_task`, which is defined by one of Fezzik's
-dependencies. This is an implementation detail and will be fixed in future versions. To mitigate this, see the
-DSL section below.
 
 
 ## Utilities
@@ -246,7 +242,6 @@ the following functions:
 destination
 env
 role
-remote_task
 capture_output
 ```
 
