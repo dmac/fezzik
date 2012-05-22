@@ -30,7 +30,8 @@ module Fezzik
   def self.remote_task(*args, &block)
     @task_roles ||= {}
     if args.last.is_a?(Hash) && args.last.has_key?(:roles)
-      @task_roles[args.first] = Array(args.last[:roles])
+      task_name = args[0].is_a?(Hash) ? args[0].keys.first : args[0]
+      @task_roles[task_name] = Array(args.last[:roles])
       args.last[:roles] = nil
     end
     Rake::RemoteTask.remote_task(*args, &block)
