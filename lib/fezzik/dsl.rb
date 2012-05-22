@@ -4,7 +4,6 @@ module Fezzik
     def self.included(klass)
       klass.class_eval do
         def role(*args) Fezzik.role(*args) end
-        def remote_task(*args, &block) Fezzik.remote_task(*args, &block) end
       end
     end
     def destination(name, &block) Fezzik.destination(name, &block) end

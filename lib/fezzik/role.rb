@@ -8,8 +8,7 @@ module Fezzik
 
   def self.with_role(role_name, &block)
     if roles[role_name].nil?
-      block.call
-      return
+      return block.call
     end
 
     old_settings = Hash[roles[role_name].map { |setting, value| [setting, self.send(setting)] }]
@@ -24,16 +23,19 @@ module Fezzik
   def self.override_settings(settings)
     settings.each { |setting, value| self.send(:set, setting, value) }
   end
+end
 
-  def self.task_roles() @task_roles ||= {} end
+module Rake
+  class RemoteTask
+    def defined_target_hosts?() true end
+    def target_hosts() domain end
 
-  def self.remote_task(*args, &block)
-    @task_roles ||= {}
-    if args.last.is_a?(Hash) && args.last.has_key?(:roles)
-      task_name = args[0].is_a?(Hash) ? args[0].keys.first : args[0]
-      @task_roles[task_name] = Array(args.last[:roles])
-      args.last[:roles] = nil
+    alias remote_task_execute execute
+    def execute(args = nil)
+      return Fezzik::Util.with_prepended_user { remote_task_execute(args) } if options[:roles].empty?
+      options[:roles].each do |role|
+        Fezzik.with_role(role) { Fezzik::Util.with_prepended_user { remote_task_execute(args) } }
+      end
     end
-    Rake::RemoteTask.remote_task(*args, &block)
   end
 end
