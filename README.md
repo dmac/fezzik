@@ -152,6 +152,58 @@ task :inspect_environment do
 end
 ```
 
+
+## Roles
+
+Fezzik supports role deployments. Roles allow you to assign remote_tasks different configurations according
+to their purpose. For example, you might want to perform your initial package installations as root, but run
+your app as an unprivileged user.
+
+```ruby
+Fezzik.destination :prod do
+  set :domain, "myapp.com"
+  Fezzik.role :root_user, :user => "root"
+  Fezzik.role :run_user, :user => "app"
+end
+
+Fezzik.remote_task :install, :roles => :root_user
+  # Install all the things.
+end
+
+Fezzik.remote_task :run, :roles => :run_user
+  # Run all the things.
+end
+```
+
+Or, you might have different domains for database deployment and app deployment.
+
+```ruby
+Fezzik.destination :prod do
+  set :user, "root"
+  Fezzik.role :db, :domain => "db.myapp.com"
+  Fezzik.role :app, :domain => "myapp.com"
+end
+```
+
+Roles in destination blocks can override global role settings.
+
+```ruby
+Fezzik.role :app, :domain => "localhost"
+
+Fezzik.destination :prod do
+  Fezzik.role :app, :domain => "myapp.com"
+end
+```
+
+The `role` method accepts a role name and a hash of values that you want assigned with the
+`set :var, value` syntax. These will override the global or destination settings when that remote_task is
+run.
+
+Note that roles require `Fezzik.remote_task` instead of `remote_task`, which is defined by one of Fezzik's
+dependencies. This is an implementation detail and will be fixed in future versions. To mitigate this, see the
+DSL section below.
+
+
 ## Utilities
 
 Fezzik exposes some functions that can be useful when running remote tasks.
@@ -193,6 +245,8 @@ the following functions:
 ```
 destination
 env
+role
+remote_task
 capture_output
 ```
 
@@ -203,8 +257,10 @@ include Fezzik::DSL
 
 destination :prod do
   env :rack_env, "production"
+  role :root_user, :user => "root"
 end
 ```
+
 
 ## Tasks
 
