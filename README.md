@@ -204,6 +204,15 @@ run.
 
 Fezzik exposes some functions that can be useful when running remote tasks.
 
+### Override hosts from command line
+
+```
+$ domain="example1.com,example2.com" fez prod deploy
+```
+
+Set the "domain" environment variable to override the domains set in your destination block. Useful for running
+one-off tasks against a subset of your hosts.
+
 ### Capture or redirect output
 
 ```ruby

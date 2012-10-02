@@ -54,6 +54,7 @@ def run_fezzik_tasks
   Fezzik.init
   Rake.application.init
   Rake.application.load_rakefile
+  set :domain, ENV["domain"].split(",") if ENV["domain"]
   begin
     host_list = Array(domain).join("\n    ")
     puts "Targeting hosts:"

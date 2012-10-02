@@ -11,7 +11,6 @@ module Fezzik
     end
   end
 
-  # TODO: add domain override (through environment variable?)
   def self.destination(name, &block)
     block.call if name == @target_destination
   end
