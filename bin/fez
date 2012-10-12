@@ -8,10 +8,6 @@ require "fezzik"
 # Required for using rake/remote-task with rake >= 0.9.x
 include Rake::DSL
 
-# TODO: Add a handy "fez init" command to set up a basic deployable directory structure
-# TODO: Think about how to do domain overrides better
-# TODO: Add Fezzik::DSL so you can say env or destination instead of Fezzik.env, Fezzik.destination
-
 Fezzik.activated = true
 
 def usage
