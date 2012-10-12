@@ -21,7 +21,6 @@ Gem::Specification.new do |s|
   s.executables = %w(fez)
   s.files = `git ls-files`.split("\n")
 
-  s.add_dependency("rake", "~>0.8.7")
   s.add_dependency("rake-remote_task", "~>2.0.2")
   s.add_dependency("colorize", ">=0.5.8")
 end
