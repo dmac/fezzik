@@ -32,7 +32,7 @@ def display_tasks_and_exit
   Rake.application.options.show_task_pattern = /^fezzik:/
   output = Fezzik::Util.capture_output { Rake.application.display_tasks_and_comments }
   output.gsub!(/^rake fezzik:/, "fez <destination> ")
-  puts output
+  puts output.strip.empty? ? "(No Fezzik tasks with descriptions are defined.)" : output
   exit 0
 end
 
