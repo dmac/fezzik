@@ -2,7 +2,6 @@
 
 require "rubygems"
 require "rake"
-require "colorize"
 require "fezzik"
 
 # Required for using rake/remote-task with rake >= 0.9.x
@@ -43,9 +42,9 @@ def download_tasks_and_exit
     task += ".rake" unless task =~ /\.rake$/
     system("curl -f #{TASKS_URL}/#{task} -o #{task} > /dev/null 2>&1")
     if $? == 0
-      puts "    [new]".green + "  #{task}"
+      puts Fezzik.color_string("    [new]", :green) + "  #{task}"
     else
-      puts "    [fail]".red + " #{task}"
+      puts Fezzik.color_string("    [fail]", :red) + " #{task}"
     end
   end
   exit 0
@@ -64,7 +63,7 @@ def run_fezzik_tasks
   rescue Rake::ConfigurationError => e
     puts "Invalid destination: #{Fezzik.target_destination}"
     puts "Make sure this destination is configured and includes `set :domain, \"yourdomain.com\"`"
-    puts "[fail]".red
+    puts Fezzik.color_string("[fail]", :red)
     exit 1
   end
   begin
@@ -73,14 +72,14 @@ def run_fezzik_tasks
       task_name, params = Fezzik::Util.split_task_and_params(task_with_params)
       Rake::Task["fezzik:#{task_name}"].invoke(params)
     end
-    puts "[success]".green
+    puts Fezzik.color_string("[success]", :green)
   rescue SystemExit, Rake::CommandFailedError => e
-    puts "[fail]".red
+    puts Fezzik.color_string("[fail]", :red)
     exit 1
   rescue StandardError => e
     puts e.message
     puts e.backtrace
-    puts "[fail]".red
+    puts Fezzik.color_string("[fail]", :red)
     fail
   end
 end
