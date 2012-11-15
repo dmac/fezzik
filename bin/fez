@@ -10,18 +10,21 @@ include Rake::DSL
 
 Fezzik.activated = true
 
-def usage
-  <<-EOF
+USAGE = <<EOF
 Version #{Fezzik::VERSION}
 fez <destination> <tasks>  # Run deployment tasks on destination servers
 fez get <tasks>            # Download tasks to use in your project
 fez -T                     # Display all tasks
-  EOF
-end
+EOF
 
 def print_usage_and_exit
-  puts usage
-  exit 1
+  puts USAGE
+  exit
+end
+
+def print_version_and_exit
+  puts "Version #{Fezzik::VERSION}"
+  exit
 end
 
 def display_tasks_and_exit
@@ -83,7 +86,9 @@ def run_fezzik_tasks
 end
 
 case ARGV[0]
-when nil, "-h" then print_usage_and_exit
+when nil then abort USAGE
+when "-h", "--help" then print_usage_and_exit
+when "-v", "--version" then print_version_and_exit
 when "-T" then display_tasks_and_exit
 when "get" then download_tasks_and_exit
 else run_fezzik_tasks
