@@ -9,9 +9,11 @@ include Rake::DSL
 ENV["fezzik_destination"] = "vagrant"
 Fezzik.init
 
+VAGRANT_DOMAIN = "fezzik-vagrant"
+
 destination :vagrant do
   set :user, "vagrant"
-  set :domain, "fezzik-vagrant"
+  set :domain, VAGRANT_DOMAIN
 end
 
 def setup_vagrant
