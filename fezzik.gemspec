@@ -13,15 +13,18 @@ Gem::Specification.new do |s|
   s.email = "dmacdougall@gmail.com"
 
   s.description = "A light deployment system that gets out of your way"
-  s.summary = "Fezzik is a small wrapper around rake/remote_task. It simplifies running commands on" +
-      "remote servers and can be used for anything from deploying code to installing libraries remotely."
+  s.summary =<<EOS
+Fezzik adds remote ssh capabilities to Rake. It simplifies running commands on remote servers and can be used
+for anything from deploying code to installing libraries remotely.
+EOS
   s.homepage = "http://github.com/dmacdougall/fezzik"
   s.rubyforge_project = "fezzik"
 
   s.executables = %w(fez)
   s.files = `git ls-files`.split("\n")
 
-  s.add_dependency("rake-remote_task", "~>2.0.2")
+  s.add_dependency "rake"
+  s.add_dependency "weave"
 
   s.add_development_dependency("scope", "~>0.2.3")
   s.add_development_dependency("vagrant", "~>1.0.5")

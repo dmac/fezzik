@@ -5,6 +5,7 @@ require "rake"
 require "fezzik"
 
 # Required for using rake/remote-task with rake >= 0.9.x
+# TODO(caleb): Still necessary w/out RRT?
 include Rake::DSL
 
 Fezzik.activated = true
