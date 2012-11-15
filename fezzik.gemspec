@@ -22,4 +22,6 @@ Gem::Specification.new do |s|
   s.files = `git ls-files`.split("\n")
 
   s.add_dependency("rake-remote_task", "~>2.0.2")
+
+  s.add_development_dependency("vagrant", "~>1.0.5")
 end
