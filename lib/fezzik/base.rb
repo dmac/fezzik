@@ -2,6 +2,16 @@ module Fezzik
   def self.activated=(value) @activated = value end
   def self.activated?() @activated || false end
 
+  def self.set(name, value)
+    @@settings ||= {}
+    @@settings[name] = value
+  end
+
+  def def self.fetch(name)
+    raise "No such setting: #{name}" unless @@settings.has_key?(name)
+    @@settings[name]
+  end
+
   def self.init(options={})
     @options = options
     @target_destination = ENV["fezzik_destination"].to_sym rescue nil

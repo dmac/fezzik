@@ -1,7 +1,8 @@
 require "stringio"
 require "thread"
 require "rake"
-require "rake/remote_task"
+require "weave"
+
 require "fezzik/base"
 require "fezzik/colors"
 require "fezzik/dsl"
