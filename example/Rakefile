@@ -1,0 +1,13 @@
+require "fezzik"
+
+set :user, "vagrant"
+set :domain, "fezzik-vagrant"
+
+Fezzik.destination :prod do
+end
+
+namespace :fezzik do
+  remote_task :ls do
+    run "ls -l"
+  end
+end

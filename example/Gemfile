@@ -1,0 +1,4 @@
+source :rubygems
+
+gem "weave", :path => File.join(File.dirname(__FILE__), "../../weave")
+gem "fezzik", :path => File.join(File.dirname(__FILE__), "../")
