@@ -2,11 +2,11 @@ module Fezzik
   module Util
     def self.capture_output(&block)
       output = StringIO.new
-      $stdout = output
+      Thread.current[:stdout] = output
       block.call
-      return output.string
+      output.string
     ensure
-      $stdout = STDOUT
+      Thread.current[:stdout] = STDOUT
     end
 
     def self.split_task_and_params(task_with_params)
