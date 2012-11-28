@@ -22,24 +22,26 @@
 #   thread2
 #   thread1
 
-class ThreadLocalIO < IO
-  @@former_stdout = $stdout
+module Fezzik
+  class ThreadLocalIO < IO
+    @@former_stdout = $stdout
 
-  def self.write(*args)
-    if Thread.current[:stdout]
-      Thread.current[:stdout].write(*args)
-    else
-      @@former_stdout.write(*args)
+    def self.write(*args)
+      if Thread.current[:stdout]
+        Thread.current[:stdout].write(*args)
+      else
+        @@former_stdout.write(*args)
+      end
     end
-  end
 
-  def self.flush
-    if Thread.current[:stdout]
-      Thread.current[:stdout].flush
-    else
-      @@former_stdout.flush
+    def self.flush
+      if Thread.current[:stdout]
+        Thread.current[:stdout].flush
+      else
+        @@former_stdout.flush
+      end
     end
   end
 end
 
-$stdout = ThreadLocalIO
+$stdout = Fezzik::ThreadLocalIO
