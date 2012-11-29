@@ -12,10 +12,16 @@ module Fezzik
   end
 
   def self.destination(*names, &block)
+    @destinations ||= Set.new
+    @destinations.merge(names)
     block.call if names.include?(@target_destination)
   end
 
   def self.target_destination
     @target_destination ||= nil
+  end
+
+  def self.destinations
+    @destinations ||= Set.new
   end
 end

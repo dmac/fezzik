@@ -31,6 +31,13 @@ def print_version_and_exit
   exit
 end
 
+def print_destinations_and_exit
+  Rake.application.init
+  Rake.application.load_rakefile
+  puts Fezzik.destinations.to_a.join("\n")
+  exit 0
+end
+
 def display_tasks_and_exit
   if Fezzik::RAKE_AT_LEAST_090
     Rake::TaskManager.record_task_metadata = true
@@ -93,11 +100,12 @@ def run_fezzik_tasks
   end
 end
 
-case ARGV[0]
+case ARGV.pop
 when nil then abort USAGE
 when "-h", "--help" then print_usage_and_exit
 when "-v", "--version" then print_version_and_exit
 when "-T", "--tasks" then display_tasks_and_exit
 when "get" then download_tasks_and_exit
+when "--destinations" then print_destinations_and_exit
 else run_fezzik_tasks
 end
