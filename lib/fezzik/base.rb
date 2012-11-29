@@ -11,8 +11,8 @@ module Fezzik
     end
   end
 
-  def self.destination(name, &block)
-    block.call if name == @target_destination
+  def self.destination(*names, &block)
+    block.call if names.include?(@target_destination)
   end
 
   def self.target_destination
