@@ -38,7 +38,7 @@ def print_destinations_and_exit
   exit 0
 end
 
-def display_tasks_and_exit
+def display_tasks_and_exit(hide_descriptions = false)
   if Fezzik::RAKE_AT_LEAST_090
     Rake::TaskManager.record_task_metadata = true
     Rake::application.options.show_tasks = :tasks
@@ -48,6 +48,7 @@ def display_tasks_and_exit
   Rake.application.options.show_task_pattern = /^fezzik:/
   output = Fezzik::Util.capture_output { Rake.application.display_tasks_and_comments }
   output.gsub!(/^rake fezzik:/, "fez <destination> ")
+  output.gsub!(/^fez <destination> (\S+).*$/, "\\1") if hide_descriptions
   puts output.strip.empty? ? "(No Fezzik tasks with descriptions are defined.)" : output
   exit 0
 end
@@ -106,6 +107,7 @@ when "-h", "--help" then print_usage_and_exit
 when "-v", "--version" then print_version_and_exit
 when "-T", "--tasks" then display_tasks_and_exit
 when "get" then download_tasks_and_exit
+when "--task-names" then display_tasks_and_exit(hide_descriptions = true)
 when "--destinations" then print_destinations_and_exit
 else run_fezzik_tasks
 end
