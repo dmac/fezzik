@@ -4,8 +4,13 @@ require "rubygems"
 require "rake"
 require "fezzik"
 
+module Fezzik
+  RAKE_AT_LEAST_090 = defined?(Rake::VERSION) &&
+      Gem.loaded_specs["rake"].version >= Gem::Version.create("0.9.0")
+end
+
 # Required for using rake/remote-task with rake >= 0.9.x
-include Rake::DSL
+include Rake::DSL if Fezzik::RAKE_AT_LEAST_090
 
 Fezzik.activated = true
 
@@ -27,6 +32,10 @@ def print_version_and_exit
 end
 
 def display_tasks_and_exit
+  if Fezzik::RAKE_AT_LEAST_090
+    Rake::TaskManager.record_task_metadata = true
+    Rake::application.options.show_tasks = :tasks
+  end
   Rake.application.init
   Rake.application.load_rakefile
   Rake.application.options.show_task_pattern = /^fezzik:/
