@@ -18,7 +18,11 @@ USAGE = <<EOF
 Version #{Fezzik::VERSION}
 fez <destination> <tasks>  # Run deployment tasks on destination servers
 fez get <tasks>            # Download tasks to use in your project
-fez -T                     # Display all tasks
+fez -v, --version          # Print version number
+fez -h, --help             # Print this help message
+fez -T                     # Print all tasks with descriptions
+fez --task-names           # Print all tasks names
+fez --destinations         # Print all destinations
 EOF
 
 def print_usage_and_exit
