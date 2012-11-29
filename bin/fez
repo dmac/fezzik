@@ -49,7 +49,7 @@ def display_tasks_and_exit(hide_descriptions = false)
   output = Fezzik::Util.capture_output { Rake.application.display_tasks_and_comments }
   output.gsub!(/^rake fezzik:/, "fez <destination> ")
   output.gsub!(/^fez <destination> (\S+).*$/, "\\1") if hide_descriptions
-  puts output.strip.empty? ? "(No Fezzik tasks with descriptions are defined.)" : output
+  output.strip.empty? ? $stderr.puts("(No Fezzik tasks with descriptions are defined.)") : puts(output)
   exit 0
 end
 
