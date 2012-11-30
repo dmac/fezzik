@@ -1,7 +1,7 @@
 #compdef fez
 
 if [[ "${words[-2]}" == "fez" ]] ; then
-  _arguments "1: :($(fez --destinations 2> /dev/null))"
+  compadd $(fez --destinations 2> /dev/null | GREP_OPTIONS='' grep -v '(in')
 else
-  compadd $(fez --task-names 2> /dev/null)
+  compadd $(fez --task-names 2> /dev/null | GREP_OPTIONS='' grep -v '(in')
 fi
