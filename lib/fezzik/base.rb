@@ -7,7 +7,7 @@ module Fezzik
     @target_destination = ENV["fezzik_destination"].to_sym rescue nil
     unless options[:tasks].nil?
       $stderr.puts "Loading Fezzik tasks from #{@options[:tasks]}"
-      Dir[File.join(Dir.pwd, "#{@options[:tasks]}/**/*.rake")].sort.each { |lib| import lib }
+      Dir[File.join(File.expand_path(@options[:tasks]), "**", "*.rake")].sort.each { |lib| import lib }
     end
   end
 
