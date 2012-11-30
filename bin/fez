@@ -18,11 +18,11 @@ USAGE = <<EOF
 Version #{Fezzik::VERSION}
 fez <destination> <tasks>  # Run deployment tasks on destination servers
 fez get <tasks>            # Download tasks to use in your project
+fez task-names             # Print all tasks names
+fez destinations           # Print all destinations
 fez -v, --version          # Print version number
 fez -h, --help             # Print this help message
 fez -T                     # Print all tasks with descriptions
-fez --task-names           # Print all tasks names
-fez --destinations         # Print all destinations
 EOF
 
 def print_usage_and_exit
@@ -105,13 +105,13 @@ def run_fezzik_tasks
   end
 end
 
-case ARGV.pop
+case ARGV[0]
 when nil then abort USAGE
 when "-h", "--help" then print_usage_and_exit
 when "-v", "--version" then print_version_and_exit
 when "-T", "--tasks" then display_tasks_and_exit
 when "get" then download_tasks_and_exit
-when "--task-names" then display_tasks_and_exit(hide_descriptions = true)
-when "--destinations" then print_destinations_and_exit
+when "task-names" then display_tasks_and_exit(hide_descriptions = true)
+when "destinations" then print_destinations_and_exit
 else run_fezzik_tasks
 end
