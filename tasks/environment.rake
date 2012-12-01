@@ -34,9 +34,12 @@ namespace :fezzik do
   task :push do
     # Copy over the appropriate configs for the target
     server = target_host.gsub(/^.*@/, "")
-    ["environment.rb", "environment.sh"].each do |config_file|
-      rsync "-q", "/tmp/#{app}/#{server}_config/#{config_file}",
-            "#{target_host}:#{release_path}/#{config_file}"
+    config_directory = "/tmp/#{app}/#{server}_config"
+    if File.directory?(config_directory)
+      ["environment.rb", "environment.sh"].each do |config_file|
+        rsync "-q", "#{config_directory}/#{config_file}",
+              "#{target_host}:#{release_path}/#{config_file}"
+      end
     end
   end
 end
