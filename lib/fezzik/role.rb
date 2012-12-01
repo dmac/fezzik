@@ -28,7 +28,7 @@ module Rake
     def defined_target_hosts?() true end
     def target_hosts() domain end
 
-    alias remote_task_execute execute
+    #alias remote_task_execute execute
     def execute(args = nil)
       return Fezzik::Util.with_prepended_user { remote_task_execute(args) } if options[:roles].empty?
       options[:roles].each do |role|

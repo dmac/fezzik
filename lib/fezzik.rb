@@ -3,6 +3,7 @@ require "thread"
 require "rake"
 require "weave"
 
+require "fezzik/host_task"
 require "fezzik/base"
 require "fezzik/colors"
 require "fezzik/dsl"
