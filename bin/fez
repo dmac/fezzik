@@ -94,7 +94,14 @@ def run_fezzik_tasks
       Rake::Task["fezzik:#{task_name}"].invoke(params)
     end
     puts Fezzik.color_string("[success]", :green)
-  rescue SystemExit, Rake::CommandFailedError => e
+  rescue SystemExit => e
+    if e.status == 0
+      puts Fezzik.color_string("[success]", :green)
+    else
+      puts Fezzik.color_string("[fail]", :red)
+      exit e.status
+    end
+  rescue Rake::CommandFailedError => e
     puts Fezzik.color_string("[fail]", :red)
     exit 1
   rescue StandardError => e
