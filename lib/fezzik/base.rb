@@ -22,6 +22,22 @@ module Fezzik
 
   def self.remote_task(*args, &block)
     # TODO: Parse remote_tasks's arguments and pass them to host_task. Deprecate.
+    # Parts to handle:
+    #   - name
+    #   - dependencies
+    #   - arguments
+    #   - roles
+    # Possible values of `args`:
+    #   [:name]
+    #   [:name, :arg1]
+    #   [:name, [:arg1, :arg2]]
+    #   [{:name => :dep1}]
+    #   [{:name => [:dep1, :dep2]}]
+    #   [:name, {:arg1 => :dep1}]
+    #   [:name, {[:arg1, :arg2] => :dep1}]
+    #   [:name, {:arg1 => [:dep1, :dep2]}]
+    #   [:name, {[:arg1, :arg2] => [:dep1, :dep2]}]
+    #   ... plus roles
     task_name = args.first.is_a?(Hash) ? args.first.keys.first : args.first
     host_task(task_name, {}, &block)
   end
