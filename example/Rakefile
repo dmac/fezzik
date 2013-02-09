@@ -39,6 +39,11 @@ namespace :fezzik do
     puts args.inspect
   end
 
+  desc "Tasks can depend on other tasks"
+  remote_task :depends => :echo do
+    puts "echo task just ran"
+  end
+
   desc "If a server command fails the block should exist and fezzik should indicate failure"
   remote_task :fails do
     run "cd i-dont-exist"
