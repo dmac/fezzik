@@ -21,9 +21,9 @@ module Fezzik
   end
 
   def self.remote_task(*args, &block)
-    # TODO: Parse roles using rake/remote_tasks method.
+    roles = (Hash === args.last && args.last[:roles]) ? args.pop[:roles] : []
     name, args, deps = Rake.application.resolve_args(args)
-    host_task(name, { :args => Array(args), :deps => Array(deps), :roles => [] }, &block)
+    host_task(name, { :args => Array(args), :deps => Array(deps), :roles => Array(roles) }, &block)
   end
 
   def self.host_task(name, options = {}, &block)
@@ -33,7 +33,7 @@ module Fezzik
       :roles => []
     }.merge(options)
     t = HostTask.define_task(name, { options[:args] => options[:deps] }, &block)
-    t.roles = options[:roles]
+    t.roles += options[:roles]
   end
 
   def self.run(*commands)
