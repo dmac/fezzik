@@ -1,13 +1,47 @@
 require "fezzik"
+include Fezzik::DSL
 
-set :user, "vagrant"
-set :domain, "fezzik-vagrant"
+Fezzik.init(:tasks => "../../tasks")
 
-Fezzik.destination :prod do
+set :app, "test"
+set :deploy_to, "/opt/#{app}"
+set :release_path, "#{deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
+set :local_path, Dir.pwd
+set :user, "root"
+
+destination :vagrant do
+  set :user, "vagrant"
+  set :domain, ["fezzik-vagrant"]
+  env :foo, "bar"
+  env :baz, "baz"
+  env :baz, "qux", :hosts => ["localhost"]
 end
 
 namespace :fezzik do
-  remote_task :ls do
-    run "ls -l"
+  desc "Print information on the destination and environment"
+  remote_task :info do
+    puts "Destination: #{Fezzik.target_destination.inspect}"
+    puts "Environment: #{Fezzik.environments}"
+  end
+
+  desc "An example of appending..."
+  remote_task :echo do
+    run "echo hi"
+  end
+
+  desc "...new actions to an existing task"
+  remote_task :echo do
+    run "echo bye"
+  end
+
+  desc "Tasks can take arguments"
+  remote_task :args, :arg1, :arg2 do |t, args|
+    puts args.inspect
+  end
+
+  desc "If a server command fails the block should exist and fezzik should indicate failure"
+  remote_task :fails do
+    run "cd i-dont-exist"
+    run "echo 'should not print'"
   end
 end
