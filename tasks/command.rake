@@ -23,7 +23,9 @@ namespace :fezzik do
       else
         begin
           Rake::Task["fezzik:command_execute"].invoke command
-        rescue Rake::CommandFailedError
+        rescue Fezzik::CommandFailedError => e
+          puts e.message
+          puts e.backtrace
         ensure
           Rake::Task["fezzik:command_execute"].reenable
         end
