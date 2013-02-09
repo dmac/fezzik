@@ -59,7 +59,7 @@ end
 
 TASKS_URL = "https://raw.github.com/dmacdougall/fezzik/master/tasks"
 def download_tasks_and_exit
-  ARGV[1..-1].each do |task|
+  OPTIONS[1..-1].each do |task|
     task += ".rake" unless task =~ /\.rake$/
     system("curl -f #{TASKS_URL}/#{task} -o #{task} > /dev/null 2>&1")
     if $? == 0
@@ -72,7 +72,7 @@ def download_tasks_and_exit
 end
 
 def run_fezzik_tasks
-  ENV["fezzik_destination"] = ARGV[0]
+  ENV["fezzik_destination"] = OPTIONS[0]
   Fezzik.init
   Rake.application.init
   Rake.application.load_rakefile
@@ -88,7 +88,7 @@ def run_fezzik_tasks
     exit 1
   end
   begin
-    tasks = ARGV[1..-1]
+    tasks = OPTIONS[1..-1]
     tasks.each do |task_with_params|
       task_name, params = Fezzik::Util.split_task_and_params(task_with_params)
       Rake::Task["fezzik:#{task_name}"].invoke(params)
