@@ -22,6 +22,8 @@ module Fezzik
 
   def self.remote_task(*args, &block)
     # TODO: Parse remote_tasks's arguments and pass them to host_task. Deprecate.
+    task_name = args.first.is_a?(Hash) ? args.first.keys.first : args.first
+    host_task(task_name, {}, &block)
   end
 
   def self.host_task(name, options = {}, &block)
