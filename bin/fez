@@ -92,7 +92,7 @@ def run_fezzik_tasks
     tasks = OPTIONS[1..-1]
     tasks.each do |task_with_params|
       task_name, params = Fezzik::Util.split_task_and_params(task_with_params)
-      Rake::Task["fezzik:#{task_name}"].invoke(params)
+      Rake::Task["fezzik:#{task_name}"].invoke(*params)
     end
     puts Fezzik.color_string("[success]", :green)
   rescue SystemExit => e
