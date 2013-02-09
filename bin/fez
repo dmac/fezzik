@@ -112,7 +112,11 @@ def run_fezzik_tasks
   end
 end
 
-case ARGV.pop
+# Rake directly inspects ARGV and will crash if it doesn't recognize a flag that was passed to fez.
+OPTIONS = ARGV.dup
+ARGV.clear
+
+case OPTIONS[0]
 when nil then abort USAGE
 when "-h", "--help" then print_usage_and_exit
 when "-v", "--version" then print_version_and_exit
