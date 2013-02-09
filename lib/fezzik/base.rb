@@ -35,12 +35,7 @@ module Fezzik
   end
 
   def self.run(*commands)
-    # TODO: When we add role functionality, check for domain setting and pass to pool.execute.
-    hosts = fetch(:domain).map { |domain| "#{fetch(:user)}@#{domain}" }
-    @@connection_pool ||= Weave.connect(hosts)
-    @@connection_pool.execute do
-      commands.each { |command| run command }
-    end
+    # Placeholder for the `run` command in host_task blocks that will be passed directly to Weave.
   end
 
   def self.init(options={})

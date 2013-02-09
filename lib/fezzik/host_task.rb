@@ -14,6 +14,12 @@ module Fezzik
 
     def execute(args = nil)
       super(args)
+      # TODO: When we add role functionality, check for domain setting and pass to pool.execute.
+      hosts = fetch(:domain).map { |domain| "#{fetch(:user)}@#{domain}" }
+      @@connection_pool ||= Weave.connect(hosts)
+      @actions.each do |action|
+        @@connection_pool.execute(&action)
+      end
     end
   end
 end
