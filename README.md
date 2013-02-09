@@ -144,6 +144,15 @@ Fezzik.destination :prod do
 end
 ```
 
+Fezzik accepts multiple destinations in the call to `Fezzik.destination`.
+This can be useful if you have common environment variables shared across destinations.
+
+```ruby
+Fezzik.destination :staging, :prod do
+  env :unicorn_workers, 4
+end
+```
+
 You can access the environment settings in your tasks, if you like. It's a hash.
 
 ```ruby

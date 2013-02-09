@@ -4,9 +4,14 @@ require "rubygems"
 require "rake"
 require "fezzik"
 
+module Fezzik
+  RAKE_AT_LEAST_090 = defined?(Rake::VERSION) &&
+      Gem.loaded_specs["rake"].version >= Gem::Version.create("0.9.0")
+end
+
 # Required for using rake/remote-task with rake >= 0.9.x
 # TODO(caleb): Still necessary w/out RRT?
-include Rake::DSL
+include Rake::DSL if Fezzik::RAKE_AT_LEAST_090
 
 Fezzik.activated = true
 
@@ -14,7 +19,11 @@ USAGE = <<EOF
 Version #{Fezzik::VERSION}
 fez <destination> <tasks>  # Run deployment tasks on destination servers
 fez get <tasks>            # Download tasks to use in your project
-fez -T                     # Display all tasks
+fez -v, --version          # Print version number
+fez -h, --help             # Print this help message
+fez -T                     # Print all tasks with descriptions
+fez --task-names           # Print all tasks names
+fez --destinations         # Print all destinations
 EOF
 
 def print_usage_and_exit
@@ -27,19 +36,31 @@ def print_version_and_exit
   exit
 end
 
-def display_tasks_and_exit
+def print_destinations_and_exit
+  Rake.application.init
+  Rake.application.load_rakefile
+  puts Fezzik.destinations.to_a.join("\n")
+  exit 0
+end
+
+def display_tasks_and_exit(hide_descriptions = false)
+  if Fezzik::RAKE_AT_LEAST_090
+    Rake::TaskManager.record_task_metadata = true
+    Rake::application.options.show_tasks = :tasks
+  end
   Rake.application.init
   Rake.application.load_rakefile
   Rake.application.options.show_task_pattern = /^fezzik:/
   output = Fezzik::Util.capture_output { Rake.application.display_tasks_and_comments }
   output.gsub!(/^rake fezzik:/, "fez <destination> ")
-  puts output.strip.empty? ? "(No Fezzik tasks with descriptions are defined.)" : output
+  output.gsub!(/^fez <destination> (\S+).*$/, "\\1") if hide_descriptions
+  output.strip.empty? ? $stderr.puts("(No Fezzik tasks with descriptions are defined.)") : puts(output)
   exit 0
 end
 
 TASKS_URL = "https://raw.github.com/dmacdougall/fezzik/master/tasks"
 def download_tasks_and_exit
-  ARGV[1..-1].each do |task|
+  OPTIONS[1..-1].each do |task|
     task += ".rake" unless task =~ /\.rake$/
     system("curl -f #{TASKS_URL}/#{task} -o #{task} > /dev/null 2>&1")
     if $? == 0
@@ -52,7 +73,7 @@ def download_tasks_and_exit
 end
 
 def run_fezzik_tasks
-  ENV["fezzik_destination"] = ARGV[0]
+  ENV["fezzik_destination"] = OPTIONS[0]
   Fezzik.init
   Rake.application.init
   Rake.application.load_rakefile
@@ -68,13 +89,20 @@ def run_fezzik_tasks
     exit 1
   end
   begin
-    tasks = ARGV[1..-1]
+    tasks = OPTIONS[1..-1]
     tasks.each do |task_with_params|
       task_name, params = Fezzik::Util.split_task_and_params(task_with_params)
       Rake::Task["fezzik:#{task_name}"].invoke(params)
     end
     puts Fezzik.color_string("[success]", :green)
-  rescue SystemExit, Fezzik::CommandFailedError => e
+  rescue SystemExit => e
+    if e.status == 0
+      puts Fezzik.color_string("[success]", :green)
+    else
+      puts Fezzik.color_string("[fail]", :red)
+      exit e.status
+    end
+  rescue Fezzik::CommandFailedError => e
     puts Fezzik.color_string("[fail]", :red)
     exit 1
   rescue StandardError => e
@@ -85,11 +113,17 @@ def run_fezzik_tasks
   end
 end
 
-case ARGV[0]
+# Rake directly inspects ARGV and will crash if it doesn't recognize a flag that was passed to fez.
+OPTIONS = ARGV.dup
+ARGV.clear
+
+case OPTIONS[0]
 when nil then abort USAGE
 when "-h", "--help" then print_usage_and_exit
 when "-v", "--version" then print_version_and_exit
 when "-T", "--tasks" then display_tasks_and_exit
 when "get" then download_tasks_and_exit
+when "--task-names" then display_tasks_and_exit(hide_descriptions = true)
+when "--destinations" then print_destinations_and_exit
 else run_fezzik_tasks
 end

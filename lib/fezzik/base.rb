@@ -47,17 +47,23 @@ module Fezzik
     @options = options
     @target_destination = ENV["fezzik_destination"].to_sym rescue nil
     unless options[:tasks].nil?
-      puts "Loading Fezzik tasks from #{@options[:tasks]}"
-      Dir[File.join(Dir.pwd, "#{@options[:tasks]}/**/*.rake")].sort.each { |lib| import lib }
+      $stderr.puts "Loading Fezzik tasks from #{@options[:tasks]}"
+      Dir[File.join(File.expand_path(@options[:tasks]), "**", "*.rake")].sort.each { |lib| import lib }
     end
   end
 
-  def self.destination(name, &block)
-    block.call if name == @target_destination
+  def self.destination(*names, &block)
+    @destinations ||= Set.new
+    @destinations.merge(names)
+    block.call if names.include?(@target_destination)
   end
 
   def self.target_destination
     @target_destination ||= nil
+  end
+
+  def self.destinations
+    @destinations ||= Set.new
   end
 
   class CommandFailedError < StandardError; end
