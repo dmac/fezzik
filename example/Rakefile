@@ -44,6 +44,11 @@ namespace :fezzik do
     puts "args: #{args.inspect}"
   end
 
+  desc "Tasks may print out the host and user."
+  remote_task :host do
+    puts "#{user}@#{host}"
+  end
+
   desc "Tasks can depend on other tasks"
   remote_task :deps => :append do
     puts "some other task just ran"

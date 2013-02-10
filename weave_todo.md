@@ -1,6 +1,5 @@
 ## TODO for weave version
 
-* Weave: Implement `target_host`.
 * Figure out how to deprecate `rsync`
 * Test everything in ruby 1.8.7
 
