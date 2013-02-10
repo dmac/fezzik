@@ -26,8 +26,9 @@ module Fezzik
         @roles.each do |role|
           Fezzik.with_role(role) do
             hosts = Fezzik.get(:domain).map { |domain| "#{Fezzik.get(:user)}@#{domain}" }
-            role_connection_pool = Weave.connect(hosts)
-            @host_actions.each { |action| role_connection_pool.execute(&action) }
+            @@role_connection_pools ||= {}
+            @@role_connection_pools[role] ||= Weave.connect(hosts)
+            @host_actions.each { |action| @@role_connection_pools[role].execute(&action) }
           end
         end
       end
