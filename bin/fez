@@ -117,6 +117,10 @@ end
 OPTIONS = ARGV.dup
 ARGV.clear
 
+# Pass these options through to Rake.
+ARGV << "--trace" if OPTIONS.delete("--trace")
+ARGV << "--dry-run" if OPTIONS.delete("--dry-run")
+
 case OPTIONS[0]
 when nil then abort USAGE
 when "-h", "--help" then print_usage_and_exit
