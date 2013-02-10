@@ -1,7 +1,3 @@
-## TODO for weave version
-
-* Test everything in ruby 1.8.7
-
 ## Breaking changes in the weave branch
 
 * `target_host` is gone
