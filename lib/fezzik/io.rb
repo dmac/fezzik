@@ -2,7 +2,7 @@
 # several things at once in multiple threads (for instance: commands on multiple servers or commands as
 # multiple users).
 #
-# TODO(dmac): Is this made obsolete by thread_local_io.rb?
+# TODO: This is probably made obsolete by thread_local_io.rb or weave.
 class IO
   @@print_mutex = Mutex.new
   alias :old_puts :puts
