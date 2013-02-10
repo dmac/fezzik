@@ -11,11 +11,11 @@ set :user, "root"
 
 destination :vagrant do
   set :user, "vagrant"
-  set :domain, ["fezzik-vagrant"]
+  set :domain, "fezzik-vagrant"
 
   env :foo, "bar"
   env :baz, "baz"
-  env :baz, "qux", :hosts => ["localhost"]
+  env :baz, "qux", :hosts => "localhost"
 
   set :role_var, nil
   role :role1, :role_var => "apple"

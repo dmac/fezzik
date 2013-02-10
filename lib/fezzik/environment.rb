@@ -1,7 +1,7 @@
 module Fezzik
   def self.env(key, value, options={})
     options = {
-      :hosts => Array(domain).map { |domain| domain.gsub(/^.*@/, "") } # strip user off the front
+      :hosts => Fezzik.get(:domain)
     }.merge(options)
     options[:hosts] = Array(options[:hosts])
     @environments ||= Hash.new { |h, k| h[k] = {} }

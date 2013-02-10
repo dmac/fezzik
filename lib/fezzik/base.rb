@@ -4,6 +4,9 @@ module Fezzik
 
   def self.set(name, value)
     @@settings ||= {}
+
+    value = Array(value) if name == :domain
+
     @@settings[name] = value
 
     # TODO: Deprecate global settings accessors
