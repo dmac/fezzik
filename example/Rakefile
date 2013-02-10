@@ -26,7 +26,7 @@ namespace :fezzik do
   desc "Print information on the destination and environment"
   remote_task :info do
     puts "Destination: #{Fezzik.target_destination.inspect}"
-    puts "Environment: #{Fezzik.environments}"
+    puts "Environment: #{Fezzik.environments.inspect}"
   end
 
   desc "An example of appending..."
