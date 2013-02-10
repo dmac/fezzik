@@ -18,8 +18,8 @@ destination :vagrant do
   env :baz, "qux", :hosts => ["localhost"]
 
   set :role_var, nil
-  role :role1, {:role_var => "apple"}
-  role :role2, {:role_var => "banana"}
+  role :role1, :role_var => "apple"
+  role :role2, :role_var => "banana"
 end
 
 namespace :fezzik do
