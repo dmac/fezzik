@@ -1,8 +1,8 @@
 ## TODO for weave version
 
-* Implement `HostTask`
-* Implement `host_task`
-* Implement `target_host`. May requre addition to Weave.
+* Weave: Expose to Fezzik when one of the `run` commands fails
+* Weave: Allow passing arguments to the host_task block
+* Weave: Implement `target_host`.
 * Confirm rake dry-run works; document it (useful feature for deployment)
 
 
