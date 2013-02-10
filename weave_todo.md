@@ -2,10 +2,6 @@
 
 * Test everything in ruby 1.8.7
 
-## Open Questions
-
-* Should we keep or deprecate the behavior of adding settings to the global namespace?
-
 ## Breaking changes in the weave branch
 
 * `target_host` is gone
@@ -14,6 +10,7 @@
 
 ## Other docs to write
 
+* Call `warn` for deprecation notices
 * document --trace and --dry-run passthrough flags
 * puts is not thread-safe; instead, use print "" + "\n"
 * capture_output captures the host prefix on each line. Instead pass :capture => :output to `run`.
