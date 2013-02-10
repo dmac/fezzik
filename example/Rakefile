@@ -1,7 +1,7 @@
 require "fezzik"
 include Fezzik::DSL
 
-Fezzik.init(:tasks => "../../tasks")
+Fezzik.init(:tasks => "../tasks")
 
 set :app, "test"
 set :deploy_to, "/opt/#{app}"
