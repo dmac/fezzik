@@ -17,4 +17,5 @@
 
 * document --trace and --dry-run passthrough flags
 * puts is not thread-safe; instead, use print "" + "\n"
-* capture_output captures the host prefix on each line. Instead pass :capture => :output to `run`
+* capture_output captures the host prefix on each line. Instead pass :capture => :output to `run`.
+  You can also use capture_output and pass :capture => raw
