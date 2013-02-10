@@ -1,6 +1,5 @@
 ## TODO for weave version
 
-* Test with capture_output
 * Test everything in ruby 1.8.7
 
 ## Open Questions
