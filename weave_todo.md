@@ -1,6 +1,5 @@
 ## TODO for weave version
 
-* Figure out how to deprecate `rsync`
 * Test everything in ruby 1.8.7
 
 ## Open Questions
@@ -9,6 +8,6 @@
 
 ## Breaking changes in the weave branch
 
-* `target_host` no longer includes "user@", it's just the domain
-* `rsync` no longer exists (unless we write a new helper function)
+* `target_host` is gone
 * `host` is now an alias for `target_host`, not a method
+* `rsync` no longer exists (unless we write a new helper function)
