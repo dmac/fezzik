@@ -19,13 +19,20 @@ module Fezzik
 
     def execute(args = nil)
       super(args)
-      # TODO: When we add role functionality, check for domain setting and pass to pool.execute.
       # TODO: Handle failure of a call to `run`. Throw a Fezzik::CommandFailedError.
       # TODO: Call action with args (requires weave addition?)
-      hosts = fetch(:domain).map { |domain| "#{fetch(:user)}@#{domain}" }
-      @@connection_pool ||= Weave.connect(hosts)
-      @host_actions.each do |action|
-        @@connection_pool.execute(&action)
+      if @roles.empty?
+        hosts = fetch(:domain).map { |domain| "#{fetch(:user)}@#{domain}" }
+        @@connection_pool ||= Weave.connect(hosts)
+        @host_actions.each { |action| @@connection_pool.execute(&action) }
+      else
+        @roles.each do |role|
+          Fezzik.with_role(role) do
+            hosts = fetch(:domain).map { |domain| "#{fetch(:user)}@#{domain}" }
+            role_connection_pool = Weave.connect(hosts)
+            @host_actions.each { |action| role_connection_pool.execute(&action) }
+          end
+        end
       end
     end
   end

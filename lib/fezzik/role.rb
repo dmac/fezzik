@@ -6,6 +6,8 @@ module Fezzik
 
   def self.roles() @roles ||= {} end
 
+  # TODO: Consider allowing roles that don't override an existing setting.
+  # Right now you have to do: set :foo nil; role :foo_role {:foo => :bar}
   def self.with_role(role_name, &block)
     return block.call if roles[role_name].nil?
 
@@ -19,21 +21,6 @@ module Fezzik
   end
 
   def self.override_settings(settings)
-    settings.each { |setting, value| self.send(:set, setting, value) }
-  end
-end
-
-module Rake
-  class RemoteTask
-    def defined_target_hosts?() true end
-    def target_hosts() domain end
-
-    #alias remote_task_execute execute
-    def execute(args = nil)
-      return Fezzik::Util.with_prepended_user { remote_task_execute(args) } if options[:roles].empty?
-      options[:roles].each do |role|
-        Fezzik.with_role(role) { Fezzik::Util.with_prepended_user { remote_task_execute(args) } }
-      end
-    end
+    settings.each { |setting, value| Fezzik.set setting, value }
   end
 end

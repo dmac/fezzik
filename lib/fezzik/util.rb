@@ -20,21 +20,5 @@ module Fezzik
       end
       [task, params]
     end
-
-    # Blocks passed to this function will ensure `domain` is always an Array. In addition, if `user` is set it
-    # will automatically prepend the value of `user` to the front of any domains missing a username. This allows a
-    # fezzik user to write the following in their configuration and have it "just work":
-    #     set :domain, ["example.com", "test@example2.com"]
-    #     set :user, "root"
-    # `domain` will be equal to ["root@example.com", "test@example2.com"]
-    def self.with_prepended_user(&block)
-      old_domain = domain
-      begin
-        set :domain, Array(domain).map { |d| (defined?(user) && !d.include?("@")) ? "#{user}@#{d}" : d }
-        block.call
-      ensure
-        set :domain, old_domain
-      end
-    end
   end
 end

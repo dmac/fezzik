@@ -3,7 +3,6 @@
 * Implement `HostTask`
 * Implement `host_task`
 * Implement `target_host`. May requre addition to Weave.
-* Integrate roles with `HostTasks`s
 * Confirm rake dry-run works; document it (useful feature for deployment)
 
 

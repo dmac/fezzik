@@ -12,9 +12,14 @@ set :user, "root"
 destination :vagrant do
   set :user, "vagrant"
   set :domain, ["fezzik-vagrant"]
+
   env :foo, "bar"
   env :baz, "baz"
   env :baz, "qux", :hosts => ["localhost"]
+
+  set :role_var, nil
+  role :role1, {:role_var => "apple"}
+  role :role2, {:role_var => "banana"}
 end
 
 namespace :fezzik do
@@ -48,5 +53,10 @@ namespace :fezzik do
   remote_task :fails do
     run "cd i-dont-exist"
     run "echo 'should not print'"
+  end
+
+  desc "Use roles to override settings"
+  remote_task :roles, :roles => [:role1, :role2] do
+    puts "role_var: #{fetch :role_var}"
   end
 end
