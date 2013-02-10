@@ -8,13 +8,9 @@ module Fezzik
       @host_actions = []
     end
 
-    # We override `enhance` rather than calling super because we don't want the host_task block passed to the
-    # superclass.
-    alias_method :original_enhance, :enhance
     def enhance(deps = nil, &block)
-      original_enhance(deps)
       @host_actions << block if block_given?
-      self
+      super(deps)
     end
 
     def execute(args = nil)
