@@ -23,13 +23,13 @@ module Fezzik
       # TODO(weave): Handle failure of a call to `run`. Throw a Fezzik::CommandFailedError.
       # TODO(weave): Call action with args (requires weave addition?)
       if @roles.empty?
-        hosts = fetch(:domain).map { |domain| "#{fetch(:user)}@#{domain}" }
+        hosts = Fezzik.get(:domain).map { |domain| "#{Fezzik.get(:user)}@#{domain}" }
         @@connection_pool ||= Weave.connect(hosts)
         @host_actions.each { |action| @@connection_pool.execute(&action) }
       else
         @roles.each do |role|
           Fezzik.with_role(role) do
-            hosts = fetch(:domain).map { |domain| "#{fetch(:user)}@#{domain}" }
+            hosts = Fezzik.get(:domain).map { |domain| "#{Fezzik.get(:user)}@#{domain}" }
             role_connection_pool = Weave.connect(hosts)
             @host_actions.each { |action| role_connection_pool.execute(&action) }
           end

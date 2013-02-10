@@ -11,11 +11,11 @@ module Fezzik
     end
 
     Object.send :define_method, name do
-      Fezzik.fetch name
+      Fezzik.get name
     end
   end
 
-  def self.fetch(name)
+  def self.get(name)
     raise "No such setting: #{name}" unless @@settings.has_key?(name)
     @@settings[name]
   end

@@ -57,6 +57,6 @@ namespace :fezzik do
 
   desc "Use roles to override settings"
   remote_task :roles, :roles => [:role1, :role2] do
-    puts "role_var: #{fetch :role_var}"
+    puts "role_var: #{get :role_var}"
   end
 end
