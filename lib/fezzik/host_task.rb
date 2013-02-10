@@ -24,7 +24,8 @@ module Fezzik
           begin
             @@connection_pool.execute(&action)
           rescue Weave::Error => e
-            abort_task(e)
+            STDERR.puts "Error running command in HostTask '#{@name}':"
+            abort e.message
           end
         end
       else
@@ -37,19 +38,13 @@ module Fezzik
               begin
                 @@role_connection_pools[role].execute(&action)
               rescue Weave::Error => e
-                abort_task(e)
+                STDERR.puts "Error running command in HostTask '#{@name}' with role '#{role}':"
+                abort e.message
               end
             end
           end
         end
       end
-    end
-
-    private
-
-    def abort_task(exception)
-      STDERR.puts "Error running command in HostTask '#{@name}':"
-      abort exception.message
     end
   end
 end
