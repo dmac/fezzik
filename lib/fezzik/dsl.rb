@@ -13,6 +13,5 @@ module Fezzik
     def get(name) Fezzik.get(name) end
     def remote_task(*args, &block) Fezzik.remote_task(*args, &block) end
     def host_task(name, options = {}, &block) Fezzik.host_task(name, options, &block) end
-    def run(*commands) Fezzik.run(commands) end
   end
 end

@@ -37,11 +37,6 @@ module Fezzik
     t.roles += options[:roles]
   end
 
-  # Placeholder for the `run` command in host_task blocks that will be passed directly to Weave.
-  def self.run(*unused)
-    raise "Fezzik: `run` must be called from within a remote_task or host_task block"
-  end
-
   def self.init(options={})
     @options = options
     @target_destination = ENV["fezzik_destination"].to_sym rescue nil
