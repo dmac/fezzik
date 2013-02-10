@@ -6,6 +6,7 @@ module Fezzik
     @@settings ||= {}
     @@settings[name] = value
 
+    # TODO: Deprecate global settings accessors
     if Object.public_instance_methods.include? name.to_sym
       Object.send :alias_method, :"old_#{name}", name
     end
