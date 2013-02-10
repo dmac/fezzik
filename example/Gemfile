@@ -1,3 +1,4 @@
 source :rubygems
 gem "fezzik", :path => ".."
+gem "weave", :path => "../../weave"
 gem "rake"
