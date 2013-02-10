@@ -17,7 +17,7 @@ module Fezzik
   end
 
   def self.get(name)
-    raise "No such setting: #{name}" unless @@settings.has_key?(name)
+    raise "Fezzik: No such setting: #{name}" unless @@settings.has_key?(name)
     @@settings[name]
   end
 
