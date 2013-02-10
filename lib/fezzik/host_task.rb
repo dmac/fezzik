@@ -18,7 +18,8 @@ module Fezzik
     end
 
     def execute(args = nil)
-      super(args)
+      return if Rake.application.options.dryrun
+
       # TODO(weave): Handle failure of a call to `run`. Throw a Fezzik::CommandFailedError.
       # TODO(weave): Call action with args (requires weave addition?)
       if @roles.empty?
