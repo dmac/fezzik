@@ -16,7 +16,6 @@ module Fezzik
     def execute(args = nil)
       return if Rake.application.options.dryrun
 
-      # TODO(weave): Call action with args (requires weave addition?)
       if @roles.empty?
         hosts = Fezzik.get(:domain).map { |domain| "#{Fezzik.get(:user)}@#{domain}" }
         @@connection_pool ||= Weave.connect(hosts)

@@ -1,7 +1,5 @@
 ## TODO for weave version
 
-* Weave: Expose to Fezzik when one of the `run` commands fails
-* Weave: Allow passing arguments to the host_task block
 * Weave: Implement `target_host`.
 * Figure out how to deprecate `rsync`
 
