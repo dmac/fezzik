@@ -22,7 +22,7 @@ module Fezzik
         @@connection_pool ||= Weave.connect(hosts)
         @host_actions.each do |action|
           begin
-            @@connection_pool.execute(&action)
+            @@connection_pool.execute(:args => [self, args], &action)
           rescue Weave::Error => e
             STDERR.puts "Error running command in HostTask '#{@name}':"
             abort e.message
@@ -36,7 +36,7 @@ module Fezzik
             @@role_connection_pools[role] ||= Weave.connect(hosts)
             @host_actions.each do |action|
               begin
-                @@role_connection_pools[role].execute(&action)
+                @@role_connection_pools[role].execute(:args => [self, args], &action)
               rescue Weave::Error => e
                 STDERR.puts "Error running command in HostTask '#{@name}' with role '#{role}':"
                 abort e.message
