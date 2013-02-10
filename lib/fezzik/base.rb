@@ -62,6 +62,4 @@ module Fezzik
   def self.destinations
     @destinations ||= Set.new
   end
-
-  class CommandFailedError < StandardError; end
 end

@@ -102,9 +102,6 @@ def run_fezzik_tasks
       puts Fezzik.color_string("[fail]", :red)
       exit e.status
     end
-  rescue Fezzik::CommandFailedError => e
-    puts Fezzik.color_string("[fail]", :red)
-    exit 1
   rescue StandardError => e
     puts e.message
     puts e.backtrace
