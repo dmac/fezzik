@@ -25,23 +25,23 @@ namespace :fezzik do
   end
 
   desc "An example of appending..."
-  remote_task :echo do
+  remote_task :append do
     run "echo hi"
   end
 
   desc "...new actions to an existing task"
-  remote_task :echo do
+  remote_task :append do
     run "echo bye"
   end
 
   desc "Tasks can take arguments"
   remote_task :args, :arg1, :arg2 do |t, args|
-    puts args.inspect
+    puts "args: #{args.inspect}"
   end
 
   desc "Tasks can depend on other tasks"
-  remote_task :depends => :echo do
-    puts "echo task just ran"
+  remote_task :deps => :append do
+    puts "some other task just ran"
   end
 
   desc "If a server command fails the block should exist and fezzik should indicate failure"
