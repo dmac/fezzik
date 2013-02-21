@@ -8,6 +8,9 @@
 
 * Call `warn` for deprecation notices
 * document --trace and --dry-run passthrough flags
-* puts is not thread-safe; instead, use print "" + "\n"
+* puts is not thread-safe; instead, use print "" + "\n" (NOTE: Caleb -- this isn't actually true; the `puts`
+  you get in a `remote_task` is a Weave wrapper, which is thread-safe. However, if you use `STDERR.puts` or
+  `STDOUT.puts` or `print` or anything else, it's not going to be threadsafe. This may be worth pointing out
+  in the docs.)
 * capture_output captures the host prefix on each line. Instead pass :capture => :output to `run`.
   You can also use capture_output and pass :capture => raw
