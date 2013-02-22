@@ -11,7 +11,7 @@ module Fezzik
   def self.with_role(role_name, &block)
     return block.call if roles[role_name].nil?
 
-    old_settings = Hash[roles[role_name].map { |setting, value| [setting, self.send(setting)] }]
+    old_settings = Hash[roles[role_name].map { |setting, value| [setting, Fezzik.get(setting)] }]
     override_settings(roles[role_name])
     begin
       block.call
