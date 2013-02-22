@@ -24,6 +24,8 @@ module Fezzik
     @@settings[name]
   end
 
+  # TODO(caleb): Private method?
+  def self.clear(name) @@settings.delete(name) end
   def self.remote_task(*args, &block)
     roles = (Hash === args.last && args.last[:roles]) ? args.pop[:roles] : []
     name, args, deps = Rake.application.resolve_args(args)

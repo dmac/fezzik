@@ -6,21 +6,28 @@ module Fezzik
 
   def self.roles() @roles ||= {} end
 
-  # TODO: Consider allowing roles that don't override an existing setting.
-  # Right now you have to do: set :foo nil; role :foo_role {:foo => :bar}
   def self.with_role(role_name, &block)
     return block.call if roles[role_name].nil?
 
-    old_settings = Hash[roles[role_name].map { |setting, value| [setting, Fezzik.get(setting)] }]
+    overridden_settings = {}
+    new_settings = []
+    roles[role_name].each_key do |name|
+      if @@settings.has_key? name
+        overridden_settings[name] = Fezzik.get(name)
+      else
+        new_settings << name
+      end
+    end
     override_settings(roles[role_name])
     begin
       block.call
     ensure
-      override_settings(old_settings)
+      override_settings(overridden_settings, new_settings)
     end
   end
 
-  def self.override_settings(settings)
-    settings.each { |setting, value| Fezzik.set setting, value }
+  def self.override_settings(to_set, to_clear = [])
+    to_clear.each { |setting| Fezzik.clear setting }
+    to_set.each { |setting, value| Fezzik.set setting, value }
   end
 end
