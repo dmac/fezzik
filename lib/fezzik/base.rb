@@ -40,6 +40,7 @@ module Fezzik
       :deps => [],
       :roles => []
     }.merge(options)
+    options.each { |key, value| options[key] = Array(value) }
     t = HostTask.define_task(name, { options[:args] => options[:deps] }, &block)
     t.roles += options[:roles]
   end
