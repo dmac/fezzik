@@ -5,6 +5,8 @@ This is useful for many tasks, including deployment.
 
 It wraps a rake-based rsync workflow and tries to keep things simple.
 
+If upgrading to 0.8 from an earlier version of Fezzik, see [Upgrading](#upgrading).
+
 ## Install
 
     gem install fezzik
@@ -17,26 +19,59 @@ Require Fezzik in your project Rakefile and define a destination:
 require "fezzik"
 
 Fezzik.destination :prod do
-  set :user, "root"
-  set :domain, "myapp.com"
+  Fezzik.set :user, "root"
+  Fezzik.set :domain, "myapp.com"
 end
 ```
 
-Write some rake tasks that will execute on the specified destination:
+A host task is similar to a normal Rake task, but will run once for every host defined by `:domain`. The body
+of a host task exposes two methods:
+
+```
+run <command> Run a shell command on the remote host
+host          The domain that the currently running host task is targeting
+```
+
+Write some host tasks that will execute on the specified destination:
 
 ```ruby
 namespace :fezzik do
-  remote_task :touch do
-    run "touch /tmp/test_file"
+  Fezzik.host_task :echo do
+    run "echo 'Running on #{host}'"
   end
 end
 ```
 
-Run your remote_tasks with fezzik:
+Run your host tasks with fezzik by passing a destination and list of tasks to run:
 
 ```
-$ fez prod touch
+$ fez prod echo
 ```
+
+### host_task
+
+The `host_task` method is similar to Rake's `task` in functionality, but has a slightly different API due to
+its additional options. A host task is defined with a name and three (optional) options: `:deps`, `:args`,
+and `:roles`. `:deps` and `:args` correspond to Rake's task arguments and task dependencies, and `:roles` is a
+Fezzik-specific option explained later.
+
+A Rake task that looks like this:
+
+```ruby
+task :echo => [:dep1, :dep2], :arg1, :arg2 do |t, args|
+  ...
+end
+```
+
+would look like this as a host task:
+
+```ruby
+Fezzik.host_task :echo, :deps => [:dep1, :dep2],
+                        :args => [:arg1, :arg2] do |t, args|
+  ...
+end
+```
+
 
 ## Deployments
 
@@ -48,25 +83,24 @@ require "fezzik"
 # Fezzik will automatically load any .rake files it finds in this directory.
 Fezzik.init(:tasks => "config/tasks")
 
-# Fezzik wraps rake/remote_task, which is the same rake plugin used by Vlad the Deployer.
-# See http://hitsquad.rubyforge.org/vlad/doco/variables_txt.html for a full list of variables it supports.
-
-set :app, "myapp"
-set :deploy_to, "/opt/#{app}"
-set :release_path, "#{deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
-set :local_path, Dir.pwd
-set :user, "root"
+# The only special settings are `:domain` and `:user`. The rest are purely convention. All settings can be
+# retrieved in your tasks with `get` (e.g., `Fezzik.get :current_path`).
+Fezzik.set :app, "myapp"
+Fezzik.set :user, "root"
+Fezzik.set :deploy_to, "/opt/#{app}"
+Fezzik.set :release_path, "#{deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
+Fezzik.set :current_path, "#{deploy_to}/current"
 
 Fezzik.destination :staging do
-  set :domain, "myapp-staging.com"
+  Fezzik.set :domain, "myapp-staging.com"
 end
 
 Fezzik.destination :prod do
-  set :domain, "myapp.com"
+  Fezzik.set :domain, "myapp.com"
 end
 ```
 
-Fezzik comes bundled with some useful rake tasks for common things like deployment.
+Fezzik comes bundled with some useful tasks for common things like deployment.
 You can download the ones you need:
 
 ```
@@ -82,13 +116,13 @@ project.
 namespace :fezzik do
   ...
   desc "runs the executable in project/bin"
-  remote_task :start do
-    puts "starting from #{Fezzik::Util.capture_output { run "readlink #{current_path}" }}"
-    run "cd #{current_path} && ./bin/run_app.sh"
+  host_task :start do
+    puts "starting from #{Fezzik::Util.capture_output { run "readlink #{Fezzik.get :current_path}" }}"
+    run "cd #{Fezzik.get :current_path} && ./bin/run_app.sh"
   end
 
   desc "kills the application by searching for the specified process name"
-  remote_task :stop do
+  host_task :stop do
     puts "stopping app"
     run "(kill `ps aux | grep 'myapp' | grep -v grep | awk '{print $2}'` || true)"
   end
@@ -101,7 +135,7 @@ Deploy win!
 ```
 $ fez prod deploy
 ...
-myapp deployed!
+[out|myapp.com] myapp deployed!
 [success]
 ```
 
@@ -117,7 +151,7 @@ $ fez get environment
 
 ```ruby
 Fezzik.destination :prod do
-  set :domain, "myapp.com"
+  Fezzik.set :domain, "myapp.com"
   Fezzik.env :rack_env, "production"
 end
 ```
@@ -128,17 +162,16 @@ project directly.
 
 ```ruby
   desc "runs the executable in project/bin"
-  remote_task :start do
-    puts "starting from #{Fezzik::Util.capture_output { run "readlink #{current_path}" }}"
-    run "cd #{current_path} && (source environment.sh || true) && ./bin/run_app.sh"
+  Fezzik.host_task :start do
+    run "cd #{Fezzik.get :current_path} && (source environment.sh || true) && ./bin/run_app.sh"
   end
 ```
 
-You can assign different environments to a subset of the hosts you deploy to.
+You can assign different environments to subsets of hosts:
 
 ```ruby
 Fezzik.destination :prod do
-  set :domain, ["myapp1.com", "myapp2.com"]
+  Fezzik.set :domain, ["myapp1.com", "myapp2.com"]
   Fezzik.env :rack_env, "production"
   Fezzik.env :is_canary, "true", :hosts => ["myapp1.com"]
 end
@@ -149,37 +182,45 @@ This can be useful if you have common environment variables shared across destin
 
 ```ruby
 Fezzik.destination :staging, :prod do
-  env :unicorn_workers, 4
+  Fezzik.env :unicorn_workers, 4
 end
 ```
 
 You can access the environment settings in your tasks, if you like. It's a hash.
 
 ```ruby
-task :inspect_environment do
+task :inspect_all_environments do
   puts Fezzik.environments.inspect
+end
+```
+
+To access the environment for the currently targeted host:
+
+```ruby
+Fezzik.host_task :inspect_environment do
+  puts Fezzik.environemnts[host].inspect
 end
 ```
 
 
 ## Roles
 
-Fezzik supports role deployments. Roles allow you to assign remote_tasks different configurations according
+Fezzik supports role deployments. Roles allow you to assign host tasks different configurations according
 to their purpose. For example, you might want to perform your initial package installations as root, but run
 your app as an unprivileged user.
 
 ```ruby
 Fezzik.destination :prod do
-  set :domain, "myapp.com"
+  Fezzik.set :domain, "myapp.com"
   Fezzik.role :root_user, :user => "root"
   Fezzik.role :run_user, :user => "app"
 end
 
-remote_task :install, :roles => :root_user
+Fezzik.host_task :install, :roles => :root_user
   # Install all the things.
 end
 
-remote_task :run, :roles => :run_user
+Fezzik.host_task :run, :roles => :run_user
   # Run all the things.
 end
 ```
@@ -188,7 +229,7 @@ Or, you might have different domains for database deployment and app deployment.
 
 ```ruby
 Fezzik.destination :prod do
-  set :user, "root"
+  Fezzik.set :user, "root"
   Fezzik.role :db, :domain => "db.myapp.com"
   Fezzik.role :app, :domain => "myapp.com"
 end
@@ -205,13 +246,13 @@ end
 ```
 
 The `Fezzik.role` method accepts a role name and a hash of values that you want assigned with the
-`set :var, value` syntax. These will override the global or destination settings when that remote_task is
+`set :var, value` syntax. These will override the global or destination settings when a host task is
 run.
 
 
 ## Utilities
 
-Fezzik exposes some functions that can be useful when running remote tasks.
+Fezzik exposes some functions that can be useful when running host tasks.
 
 ### Override hosts from command line
 
@@ -228,27 +269,40 @@ one-off tasks against a subset of your hosts.
 Fezzik::Util.capture_output(&block)
 ```
 
-Use this function if you would like to hide or capture the normal output that the "run" command prints.
+Use this function if you would like to hide or capture the normal output that the `run` command prints.
 
 ```ruby
 remote_task :print_hello
   # Nothing is printed to stdout
   server_output = Fezzik::Util.capture_output { run "echo 'hello'"}
 
-  # prints "hello"
+  # prints "[out|myapp.com] hello"
   puts server_output
 end
 ```
 
-### Inspect the target destination
-
-You can see which destination fezzik is operating on from within your tasks.
+Note that this will capture the `[out|myapp.com]` prefix that `run` prints. A cleaner way to capture the output
+is to pass options to `run` directly. It can return a hash of `:stdout, :stderr`:
 
 ```ruby
-task :print_destination
-  puts Fezzik.target_destination
-end
+output = run "echo 'hi'", :output => :capture
+# output == { :stdout => "hi" :stderr => "" }
 ```
+
+Or, it can stream the raw output without prefixing each host:
+
+```ruby
+output = Fezzik::Util.capture_output { run "echo 'hi'", :output => :raw }
+# output == "hi"
+```
+
+### A note on `puts`
+
+Ruby's `puts` is not thread-safe. In particular, running multiple `puts` in parallel can result in the
+newlines being separated from the rest of the string.
+
+As a helper, any `puts` used from within a host task will call an overridden thread-safe version of `puts`. If
+`$stdout.puts` or `$stderr.puts` is used, the normal thread-unsafe method will be called.
 
 
 ## DSL
@@ -258,6 +312,9 @@ the following functions:
 
 ```
 destination
+host_task
+set
+get
 env
 role
 capture_output
@@ -269,13 +326,18 @@ This lets you write your configuration more tersely:
 include Fezzik::DSL
 
 destination :prod do
+  set :domain "myapp.com"
   env :rack_env, "production"
   role :root_user, :user => "root"
+end
+
+host_task :echo do
+  run "echo 'Running on #{host}'"
 end
 ```
 
 
-## Tasks
+## Included Tasks
 
 Fezzik has a number of useful tasks other than deploy.rake and environment.rake. These can also be downloaded
 with `$ fez get <task>` and placed in the directory you specify with `Fezzik.init(:tasks => "config/tasks")`.
@@ -318,8 +380,8 @@ $ fez get rollback
     [new] rollback.rake
 ```
 
-Emergency! Rollback! Every deployment you make is saved on the server by default.
-You can move between these deployments (to roll back, for example), with the rollback.rb recipe.
+Emergency! Rollback! Every deployment you make is saved on the server if you use the default tasks defined in
+deploy.rake. You can move between these deployments (to roll back, for example), with rollback.rake.
 
 ```
 $ fez prod rollback
@@ -332,3 +394,42 @@ configuring for root@myapp.com
 Rollback to release (0):
 ```
 
+### Rake passthroughs
+
+Because Fezzik is built on Rake it passes through some options directly to Rake. You can use these with the
+`fez` command as if you were running `rake` directly:
+
+```
+--trace    Turn on invoke/execute tracing, enable full backtrace.
+--dry-run  Do a dry run without executing actions.
+```
+
+<a name="upgrading"></a>
+## Upgrading
+
+### 0.8.0
+
+Fezzik 0.8 replaces much of its internal piping with [Weave](https://github.com/cespare/weave), an excellent
+parallel SSH library. This allows for cleaner output and faster task execution due to using a shared
+connection pool, but necessarily introduces a few breaking changes. These are detailed below.
+
+### Breaking changes
+
+- The method `target_host` is gone and has been replaced by using `host` in a host task. The old method `host`
+  has been replaced with the new one defined in host tasks. There should no longer be a reason to use the old
+  `host` method.
+- The `current_path` setting is no longer set automatically. To continue using it in your deployments, define
+  it manually:
+
+    ```ruby
+    Fezzik.set :current_path, "#{Fezzik.get :deploy_to}/current`.
+    ```
+
+- The helper method `rsync` no longer exists.
+
+### Deprecations
+
+- The `remote_task` method is deprecated but still supported in this release. Use `host_task` going
+  forward.
+- Using settings defined by `Fezzik.set` as top-level method calls is deprecated but still supported in ths
+  release. Instead of `domain`, use `Fezzik.get :domain` going forward.
