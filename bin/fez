@@ -130,7 +130,7 @@ EOF
       puts e.message
       puts e.backtrace
       puts color_string("[fail]", :red)
-      fail
+      exit 1
     end
   end
   private_class_method :run_fezzik_tasks
