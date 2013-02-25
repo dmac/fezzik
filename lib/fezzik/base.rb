@@ -14,7 +14,8 @@ module Fezzik
     end
 
     Object.send :define_method, name do
-      # TODO: Add deprecation note for setting/accessing global settings
+      warn "WARN [Fezzik]: accessing #{name} at the top-level is deprecated as of 0.8.0," +
+           " use Fezzik.get(:#{name}) instead"
       Fezzik.get name
     end
   end
@@ -27,8 +28,8 @@ module Fezzik
   # TODO(caleb): Private method?
   def self.clear(name) @@settings.delete(name) end
 
-  # TODO: add deprecation warning for remote_task
   def self.remote_task(*args, &block)
+    warn "WARN [Fezzik]: remote_task is deprecated as of 0.8.0, use host_task instead"
     roles = (Hash === args.last && args.last[:roles]) ? args.pop[:roles] : []
     name, args, deps = Rake.application.resolve_args(args)
     host_task(name, { :args => Array(args), :deps => Array(deps), :roles => Array(roles) }, &block)
