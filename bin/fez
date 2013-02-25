@@ -7,15 +7,14 @@ require "fezzik"
 module Fezzik
   RAKE_AT_LEAST_090 = defined?(Rake::VERSION) &&
       Gem.loaded_specs["rake"].version >= Gem::Version.create("0.9.0")
-end
 
-# Required for using rake/remote-task with rake >= 0.9.x
-# TODO(caleb): Still necessary w/out RRT?
-include Rake::DSL if Fezzik::RAKE_AT_LEAST_090
+  # Required for using rake/remote-task with rake >= 0.9.x
+  # TODO(caleb): Still necessary w/out RRT?
+  include Rake::DSL if Fezzik::RAKE_AT_LEAST_090
 
-Fezzik.activated = true
+  Fezzik.activated = true
 
-USAGE = <<EOF
+  USAGE = <<EOF
 Version #{Fezzik::VERSION}
 fez <destination> <tasks>  # Run deployment tasks on destination servers
 fez get <tasks>            # Download tasks to use in your project
@@ -26,105 +25,128 @@ fez --task-names           # Print all tasks names
 fez --destinations         # Print all destinations
 EOF
 
-def print_usage_and_exit
-  puts USAGE
-  exit
-end
-
-def print_version_and_exit
-  puts "Version #{Fezzik::VERSION}"
-  exit
-end
-
-def print_destinations_and_exit
-  Rake.application.init
-  Rake.application.load_rakefile
-  puts Fezzik.destinations.to_a.join("\n")
-  exit 0
-end
-
-def display_tasks_and_exit(hide_descriptions = false)
-  if Fezzik::RAKE_AT_LEAST_090
-    Rake::TaskManager.record_task_metadata = true
-    Rake::application.options.show_tasks = :tasks
+  def self.print_usage_and_exit
+    puts USAGE
+    exit
   end
-  Rake.application.init
-  Rake.application.load_rakefile
-  Rake.application.options.show_task_pattern = /^fezzik:/
-  output = Fezzik::Util.capture_output { Rake.application.display_tasks_and_comments }
-  output.gsub!(/^rake fezzik:/, "fez <destination> ")
-  output.gsub!(/^fez <destination> (\S+).*$/, "\\1") if hide_descriptions
-  output.strip.empty? ? $stderr.puts("(No Fezzik tasks with descriptions are defined.)") : puts(output)
-  exit 0
-end
+  private_class_method :print_usage_and_exit
 
-TASKS_URL = "https://raw.github.com/dmacdougall/fezzik/master/tasks"
-def download_tasks_and_exit
-  OPTIONS[1..-1].each do |task|
-    task += ".rake" unless task =~ /\.rake$/
-    system("curl -f #{TASKS_URL}/#{task} -o #{task} > /dev/null 2>&1")
-    if $? == 0
-      puts Fezzik.color_string("    [new]", :green) + "  #{task}"
+  def self.print_version_and_exit
+    puts "Version #{Fezzik::VERSION}"
+    exit
+  end
+  private_class_method :print_version_and_exit
+
+  def self.print_destinations_and_exit
+    Rake.application.init
+    Rake.application.load_rakefile
+    puts Fezzik.destinations.to_a.join("\n")
+    exit 0
+  end
+  private_class_method :print_destinations_and_exit
+
+  def self.display_tasks_and_exit(hide_descriptions = false)
+    if Fezzik::RAKE_AT_LEAST_090
+      Rake::TaskManager.record_task_metadata = true
+      Rake::application.options.show_tasks = :tasks
+    end
+    Rake.application.init
+    Rake.application.load_rakefile
+    Rake.application.options.show_task_pattern = /^fezzik:/
+    output = Fezzik::Util.capture_output { Rake.application.display_tasks_and_comments }
+    output.gsub!(/^rake fezzik:/, "fez <destination> ")
+    output.gsub!(/^fez <destination> (\S+).*$/, "\\1") if hide_descriptions
+    output.strip.empty? ? $stderr.puts("(No Fezzik tasks with descriptions are defined.)") : puts(output)
+    exit 0
+  end
+  private_class_method :display_tasks_and_exit
+
+  TASKS_URL = "https://raw.github.com/dmacdougall/fezzik/master/tasks"
+  def self.download_tasks_and_exit
+    OPTIONS[1..-1].each do |task|
+      task += ".rake" unless task =~ /\.rake$/
+      system("curl -f #{TASKS_URL}/#{task} -o #{task} > /dev/null 2>&1")
+      if $? == 0
+        puts color_string("    [new]", :green) + "  #{task}"
+      else
+        puts color_string("    [fail]", :red) + " #{task}"
+      end
+    end
+    exit 0
+  end
+  private_class_method :download_tasks_and_exit
+
+  def self.split_task_and_params(task_with_params)
+    params_match = /(.+)\[(.+)\]/.match(task_with_params)
+    if params_match
+      task = params_match[1]
+      params = params_match[2].split(",")
     else
-      puts Fezzik.color_string("    [fail]", :red) + " #{task}"
+      task = task_with_params
+      params = nil
+    end
+    [task, params]
+  end
+  private_class_method :split_task_and_params
+
+  def self.run_fezzik_tasks
+    ENV["fezzik_destination"] = OPTIONS[0]
+    Fezzik.init
+    Rake.application.init
+    Rake.application.load_rakefile
+    set :domain, ENV["domain"].split(",") if ENV["domain"]
+    begin
+      host_list = Array(domain).join("\n    ")
+      puts "Targeting hosts:"
+      puts "    #{host_list}"
+    rescue NameError => e
+      puts "Invalid destination: #{Fezzik.target_destination}"
+      puts "Make sure this destination is configured and includes `set :domain, \"yourdomain.com\"`"
+      puts color_string("[fail]", :red)
+      exit 1
+    end
+    begin
+      tasks = OPTIONS[1..-1]
+      tasks.each do |task_with_params|
+        task_name, params = split_task_and_params(task_with_params)
+        Rake::Task["fezzik:#{task_name}"].invoke(*params)
+      end
+      puts color_string("[success]", :green)
+    rescue SystemExit => e
+      if e.status == 0
+        puts color_string("[success]", :green)
+      else
+        puts color_string("[fail]", :red)
+        exit e.status
+      end
+    rescue StandardError => e
+      puts e.message
+      puts e.backtrace
+      puts color_string("[fail]", :red)
+      fail
     end
   end
-  exit 0
-end
+  private_class_method :run_fezzik_tasks
 
-def run_fezzik_tasks
-  ENV["fezzik_destination"] = OPTIONS[0]
-  Fezzik.init
-  Rake.application.init
-  Rake.application.load_rakefile
-  set :domain, ENV["domain"].split(",") if ENV["domain"]
-  begin
-    host_list = Array(domain).join("\n    ")
-    puts "Targeting hosts:"
-    puts "    #{host_list}"
-  rescue NameError => e
-    puts "Invalid destination: #{Fezzik.target_destination}"
-    puts "Make sure this destination is configured and includes `set :domain, \"yourdomain.com\"`"
-    puts Fezzik.color_string("[fail]", :red)
-    exit 1
-  end
-  begin
-    tasks = OPTIONS[1..-1]
-    tasks.each do |task_with_params|
-      task_name, params = Fezzik::Util.split_task_and_params(task_with_params)
-      Rake::Task["fezzik:#{task_name}"].invoke(*params)
+  OPTIONS = ARGV.dup
+  # Rake directly inspects ARGV and will crash if it doesn't recognize a flag that was passed to fez.
+  ARGV.clear
+  # Pass these options through to Rake.
+  ARGV << "--trace" if OPTIONS.delete("--trace")
+  ARGV << "--dry-run" if OPTIONS.delete("--dry-run")
+
+  def self.main
+    case OPTIONS[0]
+    when nil then abort USAGE
+    when "-h", "--help" then print_usage_and_exit
+    when "-v", "--version" then print_version_and_exit
+    when "-T", "--tasks" then display_tasks_and_exit
+    when "get" then download_tasks_and_exit
+    when "--task-names" then display_tasks_and_exit(hide_descriptions = true)
+    when "--destinations" then print_destinations_and_exit
+    else run_fezzik_tasks
     end
-    puts Fezzik.color_string("[success]", :green)
-  rescue SystemExit => e
-    if e.status == 0
-      puts Fezzik.color_string("[success]", :green)
-    else
-      puts Fezzik.color_string("[fail]", :red)
-      exit e.status
-    end
-  rescue StandardError => e
-    puts e.message
-    puts e.backtrace
-    puts Fezzik.color_string("[fail]", :red)
-    fail
   end
 end
 
-# Rake directly inspects ARGV and will crash if it doesn't recognize a flag that was passed to fez.
-OPTIONS = ARGV.dup
-ARGV.clear
-
-# Pass these options through to Rake.
-ARGV << "--trace" if OPTIONS.delete("--trace")
-ARGV << "--dry-run" if OPTIONS.delete("--dry-run")
-
-case OPTIONS[0]
-when nil then abort USAGE
-when "-h", "--help" then print_usage_and_exit
-when "-v", "--version" then print_version_and_exit
-when "-T", "--tasks" then display_tasks_and_exit
-when "get" then download_tasks_and_exit
-when "--task-names" then display_tasks_and_exit(hide_descriptions = true)
-when "--destinations" then print_destinations_and_exit
-else run_fezzik_tasks
-end
+Fezzik.main()

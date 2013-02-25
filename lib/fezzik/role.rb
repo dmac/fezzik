@@ -30,4 +30,5 @@ module Fezzik
     to_clear.each { |setting| Fezzik.clear setting }
     to_set.each { |setting, value| Fezzik.set setting, value }
   end
+  private_class_method :override_settings
 end
