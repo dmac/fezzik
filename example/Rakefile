@@ -4,9 +4,8 @@ include Fezzik::DSL
 Fezzik.init(:tasks => "../tasks")
 
 set :app, "test"
-set :deploy_to, "/opt/#{app}"
-set :release_path, "#{deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
-set :local_path, Dir.pwd
+set :deploy_to, "/opt/#{get :app}"
+set :release_path, "#{get :deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
 set :user, "root"
 
 destination :vagrant do

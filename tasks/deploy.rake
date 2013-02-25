@@ -1,42 +1,45 @@
 require "fileutils"
+require "fezzik"
+
+include Fezzik::DSL
 
 namespace :fezzik do
   desc "stages the project for deployment in /tmp"
   task :stage do
-    puts "staging project in /tmp/#{app}"
-    FileUtils.rm_rf "/tmp/#{app}"
-    FileUtils.mkdir_p "/tmp/#{app}/staged"
+    puts "staging project in /tmp/#{get :app}"
+    FileUtils.rm_rf "/tmp/#{get :app}"
+    FileUtils.mkdir_p "/tmp/#{get :app}/staged"
     # Use rsync to preserve executability and follow symlinks.
-    system("rsync -aqE #{local_path}/. /tmp/#{app}/staged")
+    system("rsync -aqE ./ /tmp/#{get :app}/staged")
   end
 
   desc "performs any necessary setup on the destination servers prior to deployment"
-  remote_task :setup do
+  host_task :setup do
     puts "setting up servers"
-    run "mkdir -p #{deploy_to}/releases"
+    run "mkdir -p #{get :deploy_to}/releases"
   end
 
   desc "rsyncs the project from its staging location to each destination server"
-  remote_task :push => [:stage, :setup] do
-    puts "pushing to #{target_host}:#{release_path}"
+  host_task :push, :deps => [:stage, :setup] do
+    puts "pushing to #{host}:#{get :release_path}"
     # Copy on top of previous release to optimize rsync
-    rsync "-q", "--copy-dest=#{current_path}", "/tmp/#{app}/staged/", "#{target_host}:#{release_path}"
+    system "rsync -azq --copy-dest=#{get :current_path} /tmp/#{get :app}/staged/ #{host}:#{get :release_path}"
   end
 
   desc "symlinks the latest deployment to /deploy_path/project/current"
-  remote_task :symlink do
-    puts "symlinking current to #{release_path}"
-    run "cd #{deploy_to} && ln -fns #{release_path} current"
+  host_task :symlink do
+    puts "symlinking current to #{get :release_path}"
+    run "cd #{get :deploy_to} && ln -fns #{get :release_path} current"
   end
 
   desc "runs the executable in project/bin"
-  remote_task :start do
-    puts "starting from #{Fezzik::Util.capture_output { run "readlink #{current_path}" }}"
-    run "cd #{current_path} && (source environment.sh || true) && ./bin/run_app.sh"
+  host_task :start do
+    puts "starting from #{(run "readlink #{get :current_path}", :output => :capture)[:stdout] }"
+    run "cd #{get :current_path} && (source environment.sh || true) && ./bin/run_app.sh"
   end
 
   desc "kills the application by searching for the specified process name"
-  remote_task :stop do
+  host_task :stop do
     # Replace YOUR_APP_NAME with whatever is run from your bin/run_app.sh file.
     # If you'd like to do this nicer you can save the PID of your process with `echo $! > app.pid`
     # in the start task and read the PID to kill here in the stop task.
@@ -45,7 +48,7 @@ namespace :fezzik do
   end
 
   desc "restarts the application"
-  remote_task :restart do
+  host_task :restart do
     Rake::Task["fezzik:stop"].invoke
     Rake::Task["fezzik:start"].invoke
   end
@@ -55,6 +58,6 @@ namespace :fezzik do
     Rake::Task["fezzik:push"].invoke
     Rake::Task["fezzik:symlink"].invoke
     Rake::Task["fezzik:restart"].invoke
-    puts "#{app} deployed!"
+    puts "#{get :app} deployed!"
   end
 end

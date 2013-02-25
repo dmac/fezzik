@@ -113,7 +113,7 @@ EOF
     Rake.application.load_rakefile
     set :domain, ENV["domain"].split(",") if ENV["domain"]
     begin
-      host_list = Array(domain).join("\n    ")
+      host_list = Array(get :domain).join("\n    ")
       puts "Targeting hosts:"
       puts "    #{host_list}"
     rescue NameError => e

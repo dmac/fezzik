@@ -8,12 +8,14 @@
 namespace :fezzik do
   desc "interactively roll back deployment"
   task :rollback do
-    target_domain = domain.is_a?(Array) ? domain.first : domain
-    releases = `ssh #{target_domain} "cd #{File.dirname(release_path)} && ls"`.split(/\s+/).reverse
-    current_release = File.basename(`ssh #{target_domain} "cd #{deploy_to} && readlink current"`).strip
+    target_domain = Array(get :domain).first
+    releases = `ssh #{target_domain} "cd #{File.dirname(get :release_path)} && ls"`.split(/\s+/).reverse
+    current_release = File.basename(`ssh #{target_domain} "cd #{get :deploy_to} && readlink current"`).strip
     puts "=== Releases ==="
     puts "0: Abort"
-    releases.each_index { |i| puts "#{i+1}: #{releases[i]} #{releases[i] == current_release ? "(current)" : ""}" }
+    releases.each_index do |i|
+      puts "#{i+1}: #{releases[i]} #{releases[i] == current_release ? "(current)" : ""}"
+    end
     print "Rollback to release (0): "
     STDOUT.flush
     release_num = STDIN.gets.chomp.to_i
@@ -29,10 +31,10 @@ namespace :fezzik do
 
   desc "rolls back deployment to the previous release"
   task :rollback_one do
-    target_domain = domain.is_a?(Array) ? domain.first : domain
-    current_release = File.basename(`ssh #{target_domain} "cd #{deploy_to} && readlink current"`).strip
+    target_domain = Array(get :domain).first
+    current_release = File.basename(`ssh #{target_domain} "cd #{get :deploy_to} && readlink current"`).strip
     previous_release = %x{
-        ssh #{target_domain} "cd #{File.dirname(release_path)} && ls | grep "#{current_release}" -B 1 | head -1"
+ssh #{target_domain} "cd #{File.dirname(get :release_path)} && ls | grep "#{current_release}" -B 1 | head -1"
     }.strip
 
     if previous_release == current_release
@@ -44,10 +46,10 @@ namespace :fezzik do
   end
 
   desc "rolls back deployment to a specific release"
-  remote_task :rollback_to_release, :selected_release do |t, args|
+  host_task :rollback_to_release, :args => :selected_release do |t, args|
     selected_release = args[:selected_release]
-    puts "rolling #{target_host} back to #{selected_release}"
-    run "cd #{deploy_to} && ln -fns #{File.dirname(release_path)}/#{selected_release} current"
+    puts "rolling #{host} back to #{selected_release}"
+    run "cd #{get :deploy_to} && ln -fns #{File.dirname(get :release_path)}/#{selected_release} current"
     Rake::Task["fezzik:restart"].invoke
   end
 end

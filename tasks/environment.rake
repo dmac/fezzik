@@ -1,4 +1,7 @@
 require "fileutils"
+require "fezzik"
+
+include Fezzik::DSL
 
 # Any variables set in deploy.rb with `Fezzik.env` will be saved on the server in two files:
 # environment.sh and environment.rb. The first can be loaded into the shell environment before the run script
@@ -8,7 +11,7 @@ namespace :fezzik do
   desc "saves variables set by `Fezzik.env` into a local staging area before deployment"
   task :save_environment do
     Fezzik.environments.each do |server, environment|
-      root_config_dir = "/tmp/#{app}/#{server}_config"
+      root_config_dir = "/tmp/#{get :app}/#{server}_config"
       FileUtils.mkdir_p root_config_dir
       File.open(File.join(root_config_dir, "environment.rb"), "w") do |file|
         environment.each do |key, value|
@@ -33,12 +36,10 @@ namespace :fezzik do
 
   task :push do
     # Copy over the appropriate configs for the target
-    server = target_host.gsub(/^.*@/, "")
-    config_directory = "/tmp/#{app}/#{server}_config"
+    config_directory = "/tmp/#{get :app}/#{host}_config"
     if File.directory?(config_directory)
       ["environment.rb", "environment.sh"].each do |config_file|
-        rsync "-q", "#{config_directory}/#{config_file}",
-              "#{target_host}:#{release_path}/#{config_file}"
+        system "rsync -azq #{config_directory}/#{config_file} #{host}:#{get :release_path}/#{config_file}"
       end
     end
   end

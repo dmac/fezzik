@@ -31,6 +31,8 @@ namespace :fezzik do
   end
 
   desc "run a single command on destination servers"
-  remote_task(:command_execute, :command) { |t, args| run args[:command], :continue_on_failure => true }
+  host_task(:command_execute, :args => :command) do |t, args|
+    run args[:command], :continue_on_failure => true
+  end
 end
 
