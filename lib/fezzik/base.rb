@@ -25,7 +25,6 @@ module Fezzik
     @@settings[name]
   end
 
-  # TODO(caleb): Private method?
   def self.clear(name) @@settings.delete(name) end
 
   def self.remote_task(*args, &block)
