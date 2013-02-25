@@ -9,7 +9,9 @@ If upgrading to 0.8 from an earlier version of Fezzik, see [Upgrading](#upgradin
 
 ## Install
 
-    gem install fezzik
+```
+gem install fezzik
+```
 
 ## Basic setup
 
@@ -51,14 +53,14 @@ $ fez prod echo
 ### host_task
 
 The `host_task` method is similar to Rake's `task` in functionality, but has a slightly different API due to
-its additional options. A host task is defined with a name and three (optional) options: `:deps`, `:args`,
-and `:roles`. `:deps` and `:args` correspond to Rake's task arguments and task dependencies, and `:roles` is a
+its additional options. A host task is defined with a name and three (optional) options: `:args`, `:deps`,
+and `:roles`. `:args` and `:deps` correspond to Rake's task arguments and task dependencies, and `:roles` is a
 Fezzik-specific option explained later.
 
 A Rake task that looks like this:
 
 ```ruby
-task :echo => [:dep1, :dep2], :arg1, :arg2 do |t, args|
+task :echo, [:arg1, :arg2] => [:dep1, :dep2] do |t, args|
   ...
 end
 ```
@@ -66,8 +68,8 @@ end
 would look like this as a host task:
 
 ```ruby
-Fezzik.host_task :echo, :deps => [:dep1, :dep2],
-                        :args => [:arg1, :arg2] do |t, args|
+Fezzik.host_task :echo, :args => [:arg1, :arg2],
+                        :deps => [:dep1, :dep2] do |t, args|
   ...
 end
 ```
@@ -413,10 +415,10 @@ connection pool, but necessarily introduces a few breaking changes. These are de
 
 ### Deprecations
 
-- The `remote_task` method is deprecated. Use `host_task` going forward.
+- The `remote_task` method is deprecated. Use `host_task` instead.
 - Using settings defined by `Fezzik.set` as top-level method calls is deprecated.  Instead of `domain`, use
-  `Fezzik.get :domain` going forward.
-- Fezzik::Util.capture_output is deprecated. Instead, pass options directly to `run`:
+  `Fezzik.get :domain` instead.
+- Fezzik::Util.capture_output is deprecated. Pass options directly to `run` instead:
 
     ```ruby
     run "echo 'hi'", :output => :capture
