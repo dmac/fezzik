@@ -139,6 +139,7 @@ EOF
   # Rake directly inspects ARGV and will crash if it doesn't recognize a flag that was passed to fez.
   ARGV.clear
   # Pass these options through to Rake.
+  # TODO: Pass full trace options through (e.g., --trace=STDOUT)
   ARGV << "--trace" if OPTIONS.delete("--trace")
   ARGV << "--dry-run" if OPTIONS.delete("--dry-run")
 
