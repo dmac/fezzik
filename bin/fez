@@ -32,6 +32,16 @@ EOF
   end
   private_class_method :color_string
 
+  def self.capture_output(&block)
+    output = StringIO.new
+    $stdout = output
+    block.call
+    output.string
+  ensure
+    $stdout = STDOUT
+  end
+  private_class_method :capture_output
+
   def self.print_usage_and_exit
     puts USAGE
     exit
@@ -60,7 +70,7 @@ EOF
     Rake.application.init
     Rake.application.load_rakefile
     Rake.application.options.show_task_pattern = /^fezzik:/
-    output = Fezzik::Util.capture_output { Rake.application.display_tasks_and_comments }
+    output = capture_output { Rake.application.display_tasks_and_comments }
     output.gsub!(/^rake fezzik:/, "fez <destination> ")
     output.gsub!(/^fez <destination> (\S+).*$/, "\\1") if hide_descriptions
     output.strip.empty? ? $stderr.puts("(No Fezzik tasks with descriptions are defined.)") : puts(output)

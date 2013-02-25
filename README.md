@@ -117,7 +117,7 @@ namespace :fezzik do
   ...
   desc "runs the executable in project/bin"
   host_task :start do
-    puts "starting from #{Fezzik::Util.capture_output { run "readlink #{Fezzik.get :current_path}" }}"
+    puts "starting from #{(run "readlink #{Fezzik.get :current_path}", :output => capture)[:stdout] }}"
     run "cd #{Fezzik.get :current_path} && ./bin/run_app.sh"
   end
 
@@ -263,37 +263,21 @@ $ domain="example1.com,example2.com" fez prod deploy
 Set the "domain" environment variable to override the domains set in your destination block. Useful for running
 one-off tasks against a subset of your hosts.
 
-### Capture or redirect output
+### Capture or modify output
+
+The output of `run` can be captured or modified instead of printing directly with the host prefix.
+
+It can return a hash of `:stdout, :stderr`, or it can stream the raw output without prefixing each host.
 
 ```ruby
-Fezzik::Util.capture_output(&block)
-```
+# prints "[out|myapp.com] hi"
+run "echo 'hi'"
 
-Use this function if you would like to hide or capture the normal output that the `run` command prints.
+# prints "hi"
+run "echo 'hi'", :output => :raw
 
-```ruby
-remote_task :print_hello
-  # Nothing is printed to stdout
-  server_output = Fezzik::Util.capture_output { run "echo 'hello'"}
-
-  # prints "[out|myapp.com] hello"
-  puts server_output
-end
-```
-
-Note that this will capture the `[out|myapp.com]` prefix that `run` prints. A cleaner way to capture the output
-is to pass options to `run` directly. It can return a hash of `:stdout, :stderr`:
-
-```ruby
-output = run "echo 'hi'", :output => :capture
 # output == { :stdout => "hi" :stderr => "" }
-```
-
-Or, it can stream the raw output without prefixing each host:
-
-```ruby
-output = Fezzik::Util.capture_output { run "echo 'hi'", :output => :raw }
-# output == "hi"
+output = run "echo 'hi'", :output => :capture
 ```
 
 ### A note on `puts`
@@ -302,7 +286,7 @@ Ruby's `puts` is not thread-safe. In particular, running multiple `puts` in para
 newlines being separated from the rest of the string.
 
 As a helper, any `puts` used from within a host task will call an overridden thread-safe version of `puts`. If
-`$stdout.puts` or `$stderr.puts` is used, the normal thread-unsafe method will be called.
+`$stdout.puts` or `$stderr.puts` is used instead, the normal thread-unsafe method will be called.
 
 
 ## DSL
@@ -429,7 +413,12 @@ connection pool, but necessarily introduces a few breaking changes. These are de
 
 ### Deprecations
 
-- The `remote_task` method is deprecated but still supported in this release. Use `host_task` going
-  forward.
-- Using settings defined by `Fezzik.set` as top-level method calls is deprecated but still supported in ths
-  release. Instead of `domain`, use `Fezzik.get :domain` going forward.
+- The `remote_task` method is deprecated. Use `host_task` going forward.
+- Using settings defined by `Fezzik.set` as top-level method calls is deprecated.  Instead of `domain`, use
+  `Fezzik.get :domain` going forward.
+- Fezzik::Util.capture_output is deprecated. Instead, pass options directly to `run`:
+
+    ```ruby
+    run "echo 'hi'", :output => :capture
+    run "echo 'hi'", :output => :raw
+    ```
