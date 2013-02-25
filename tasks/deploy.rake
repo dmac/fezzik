@@ -48,16 +48,11 @@ namespace :fezzik do
   end
 
   desc "restarts the application"
-  host_task :restart do
-    Rake::Task["fezzik:stop"].invoke
-    Rake::Task["fezzik:start"].invoke
+  host_task :restart, :deps => [:stop, :start] do
   end
 
   desc "full deployment pipeline"
-  task :deploy do
-    Rake::Task["fezzik:push"].invoke
-    Rake::Task["fezzik:symlink"].invoke
-    Rake::Task["fezzik:restart"].invoke
+  task :deploy => [:push, :write_environment, :symlink, :restart] do
     puts "#{get :app} deployed!"
   end
 end
