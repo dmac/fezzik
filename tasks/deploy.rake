@@ -4,6 +4,24 @@ require "fezzik"
 include Fezzik::DSL
 
 namespace :fezzik do
+  desc "writes environment files on the server"
+  host_task :write_environment do
+    puts "writing environment files"
+    environment = Fezzik.environments[host]
+    staging_path = "/tmp/#{get :app}/environments/#{host}"
+    FileUtils.mkdir_p staging_path
+    File.open("#{staging_path}/environment.rb", "w") do |f|
+      environment.each do |key, value|
+        quote = value.is_a?(Numeric) ? '' : '"'
+        f.puts "#{key.to_s.upcase} = #{quote}#{value}#{quote}"
+      end
+    end
+    File.open("#{staging_path}/environment.sh", "w") do |f|
+      environment.each { |key, value| f.puts %[export #{key.to_s.upcase}="#{value}"] }
+    end
+    system "rsync -az #{staging_path}/environment.* #{user}@#{host}:#{get :release_path}"
+  end
+
   desc "stages the project for deployment in /tmp"
   task :stage do
     puts "staging project in /tmp/#{get :app}"
@@ -21,9 +39,10 @@ namespace :fezzik do
 
   desc "rsyncs the project from its staging location to each destination server"
   host_task :push, :deps => [:stage, :setup] do
-    puts "pushing to #{host}:#{get :release_path}"
+    puts "pushing to #{user}@#{host}:#{get :release_path}"
     # Copy on top of previous release to optimize rsync
-    system "rsync -azq --copy-dest=#{get :current_path} /tmp/#{get :app}/staged/ #{host}:#{get :release_path}"
+    system "rsync -azq --copy-dest=#{get :current_path} /tmp/#{get :app}/staged/" +
+           " #{user}@#{host}:#{get :release_path}"
   end
 
   desc "symlinks the latest deployment to /deploy_path/project/current"

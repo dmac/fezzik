@@ -147,8 +147,8 @@ Configuration often changes when you deploy your project. Fezzik lets you set en
 
 ```
 $ cd config/tasks
-$ fez get environment
-    [new] environment.rake
+$ fez get deploy
+    [new] deploy.rake
 ```
 
 ```ruby
@@ -325,11 +325,11 @@ end
 
 ## Included Tasks
 
-Fezzik has a number of useful tasks other than deploy.rake and environment.rake. These can also be downloaded
+Fezzik has a number of useful tasks other than those defined in deploy.rake. These can also be downloaded
 with `$ fez get <task>` and placed in the directory you specify with `Fezzik.init(:tasks => "config/tasks")`.
 
 These tasks are meant to be starting points. For example, if you want to save your environment files in a
-place that's not your project root you can simply edit the task in environment.rake.
+place that's not your project root you can simply edit the task in deploy.rake.
 
 If you write a recipe that would be useful to other developers, please submit a pull request!
 
