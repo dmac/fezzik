@@ -6,7 +6,6 @@ require "set"
 
 require "fezzik/host_task"
 require "fezzik/base"
-require "fezzik/colors"
 require "fezzik/dsl"
 require "fezzik/environment"
 require "fezzik/role"
