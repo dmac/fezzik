@@ -402,8 +402,7 @@ connection pool, but necessarily introduces a few breaking changes. These are de
 ### Breaking changes
 
 - The method `target_host` is gone and has been replaced by using `host` in a host task. The old method `host`
-  has been replaced with the new one defined in host tasks. There should no longer be a reason to use the old
-  `host` method.
+  has been removed and there should no longer be a reason to use it.
 - The `current_path` setting is no longer set automatically. To continue using it in your deployments, define
   it manually:
 
@@ -416,8 +415,8 @@ connection pool, but necessarily introduces a few breaking changes. These are de
 ### Deprecations
 
 - The `remote_task` method is deprecated. Use `host_task` instead.
-- Using settings defined by `Fezzik.set` as top-level method calls is deprecated.  Instead of `domain`, use
-  `Fezzik.get :domain` instead.
+- Using settings defined by `Fezzik.set` as top-level method calls is deprecated. For example, use
+  `Fezzik.get :domain` instead of `domain`.
 - Fezzik::Util.capture_output is deprecated. Pass options directly to `run` instead:
 
     ```ruby
