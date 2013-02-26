@@ -1,11 +1,13 @@
 require "fezzik"
 include Fezzik::DSL
+include Rake::DSL
 
 Fezzik.init(:tasks => "../tasks")
 
 set :app, "test"
 set :deploy_to, "/opt/#{get :app}"
 set :release_path, "#{get :deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
+set :current_path, "#{get :deploy_to}/current"
 set :user, "root"
 
 destination :vagrant do
@@ -23,44 +25,44 @@ end
 
 namespace :fezzik do
   desc "Print information on the destination and environment"
-  remote_task :info do
+  host_task :info do
     puts "Destination: #{Fezzik.target_destination.inspect}"
     puts "Environment: #{Fezzik.environments.inspect}"
   end
 
   desc "An example of appending..."
-  remote_task :append do
+  host_task :append do
     run "echo hi"
   end
 
   desc "...new actions to an existing task"
-  remote_task :append do
+  host_task :append do
     run "echo bye"
   end
 
   desc "Tasks can take arguments"
-  remote_task :args, :arg1, :arg2 do |t, args|
+  host_task :argtest, :args => [:arg1, :arg2] do |t, args|
     puts "args: #{args.inspect}"
   end
 
   desc "Tasks may print out the host and user."
-  remote_task :host do
+  host_task :host do
     puts "#{user}@#{host}"
   end
 
   desc "Tasks can depend on other tasks"
-  remote_task :deps => :append do
+  host_task :depstest, :deps => :append do
     puts "some other task just ran"
   end
 
   desc "If a server command fails the block should exist and fezzik should indicate failure"
-  remote_task :fails do
+  host_task :fails do
     run "cd i-dont-exist"
     run "echo 'should not print'"
   end
 
   desc "Use roles to override settings"
-  remote_task :roles, :roles => [:role1, :role2] do
+  host_task :roles, :roles => [:role1, :role2] do
     puts "role_var: #{get :role_var}"
   end
 end
