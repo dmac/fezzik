@@ -56,7 +56,7 @@ namespace :fezzik do
     # A very simple run_app.sh might contain the following:
     #     #!/bin/sh
     #
-    #     yes > /dev/null &
+    #     yes &> /dev/null &
     #     echo $! > /tmp/app.pid
     puts "starting from #{(run "readlink #{get :current_path}", :output => :capture)[:stdout] }"
     run "cd #{get :current_path} && source environment.sh && ./run_app.sh"

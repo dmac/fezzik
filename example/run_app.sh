@@ -1,4 +1,4 @@
 #!/bin/bash
 
-yes > /dev/null &
+yes &> /dev/null &
 echo $! > /tmp/app.pid
