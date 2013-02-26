@@ -411,7 +411,7 @@ connection pool, but necessarily introduces a few breaking changes. These are de
     Fezzik.set :current_path, "#{Fezzik.get :deploy_to}/current`.
     ```
 
-- The helper method `rsync` no longer exists.
+- The helper method `rsync` no longer exists. Instead of `rsync "..."` use `system("rsync -az ...")`
 
 ### Deprecations
 
