@@ -53,17 +53,19 @@ namespace :fezzik do
 
   desc "runs the executable in project/bin"
   host_task :start do
+    # A very simple run_app.sh might contain the following:
+    #     #!/bin/sh
+    #
+    #     yes > /dev/null &
+    #     echo $! > /tmp/app.pid
     puts "starting from #{(run "readlink #{get :current_path}", :output => :capture)[:stdout] }"
-    run "cd #{get :current_path} && (source environment.sh || true) && ./bin/run_app.sh"
+    run "cd #{get :current_path} && source environment.sh && ./run_app.sh"
   end
 
   desc "kills the application by searching for the specified process name"
   host_task :stop do
-    # Replace YOUR_APP_NAME with whatever is run from your bin/run_app.sh file.
-    # If you'd like to do this nicer you can save the PID of your process with `echo $! > app.pid`
-    # in the start task and read the PID to kill here in the stop task.
-    # puts "stopping app"
-    # run "(kill -9 `ps aux | grep 'YOUR_APP_NAME' | grep -v grep | awk '{print $2}'` || true)"
+    puts "stopping app"
+    run "cd #{get :current_path} && touch /tmp/app.pid && kill `cat /tmp/app.pid` || true && rm /tmp/app.pid"
   end
 
   desc "restarts the application"
