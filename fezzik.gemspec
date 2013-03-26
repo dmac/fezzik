@@ -27,5 +27,4 @@ EOS
   s.add_dependency "weave", "=0.1.0"
 
   s.add_development_dependency("scope", "~>0.2.3")
-  s.add_development_dependency("vagrant", "~>1.0.5")
 end
