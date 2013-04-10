@@ -411,6 +411,7 @@ connection pool, but necessarily introduces a few breaking changes. These are de
     ```
 
 - The helper method `rsync` no longer exists. Instead of `rsync "..."` use `system("rsync -az ...")`
+- The helper method `sudo` no longer exists. Instead of `sudo "..."` use `run "sudo ..."`
 
 ### Deprecations
 
