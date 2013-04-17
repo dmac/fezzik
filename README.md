@@ -89,9 +89,9 @@ Fezzik.init(:tasks => "config/tasks")
 # retrieved in your tasks with `get` (e.g., `Fezzik.get :current_path`).
 Fezzik.set :app, "myapp"
 Fezzik.set :user, "root"
-Fezzik.set :deploy_to, "/opt/#{app}"
-Fezzik.set :release_path, "#{deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
-Fezzik.set :current_path, "#{deploy_to}/current"
+Fezzik.set :deploy_to, "/opt/#{Fezzik.get :app}"
+Fezzik.set :release_path, "#{Fezzik.get :deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
+Fezzik.set :current_path, "#{Fezzik.get :deploy_to}/current"
 
 Fezzik.destination :staging do
   Fezzik.set :domain, "myapp-staging.com"
