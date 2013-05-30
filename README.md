@@ -200,7 +200,7 @@ To access the environment for the currently targeted host:
 
 ```ruby
 Fezzik.host_task :inspect_environment do
-  puts Fezzik.environemnts[host].inspect
+  puts Fezzik.environments[host].inspect
 end
 ```
 
