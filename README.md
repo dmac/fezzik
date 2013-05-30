@@ -118,13 +118,13 @@ project.
 namespace :fezzik do
   ...
   desc "runs the executable in project/bin"
-  host_task :start do
+  Fezzik.host_task :start do
     puts "starting from #{(run "readlink #{Fezzik.get :current_path}", :output => capture)[:stdout] }}"
     run "cd #{Fezzik.get :current_path} && ./bin/run_app.sh"
   end
 
   desc "kills the application by searching for the specified process name"
-  host_task :stop do
+  Fezzik.host_task :stop do
     puts "stopping app"
     run "(kill `ps aux | grep 'myapp' | grep -v grep | awk '{print $2}'` || true)"
   end
