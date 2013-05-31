@@ -18,10 +18,10 @@ module Fezzik
 
       if @roles.empty?
         hosts = Fezzik.get(:domain).map { |domain| "#{Fezzik.get(:user)}@#{domain}" }
-        @@connection_pool ||= Weave.connect(hosts)
+        @@connection_pool ||= Weave::ConnectionPool.new
         @host_actions.each do |action|
           begin
-            @@connection_pool.execute(:args => [self, args], &action)
+            @@connection_pool.execute_with(hosts, :args => [self, args], &action)
           rescue Weave::Error => e
             STDERR.puts "Error running command in HostTask '#{@name}':"
             abort e.message
@@ -32,10 +32,10 @@ module Fezzik
           Fezzik.with_role(role) do
             hosts = Fezzik.get(:domain).map { |domain| "#{Fezzik.get(:user)}@#{domain}" }
             @@role_connection_pools ||= {}
-            @@role_connection_pools[role] ||= Weave.connect(hosts)
+            @@role_connection_pools[role] ||= Weave::ConnectionPool.new
             @host_actions.each do |action|
               begin
-                @@role_connection_pools[role].execute(:args => [self, args], &action)
+                @@role_connection_pools[role].execute_with(hosts, :args => [self, args], &action)
               rescue Weave::Error => e
                 STDERR.puts "Error running command in HostTask '#{@name}' with role '#{role}':"
                 abort e.message
