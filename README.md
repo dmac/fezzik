@@ -19,10 +19,11 @@ Require Fezzik in your project Rakefile and define a destination:
 
 ```ruby
 require "fezzik"
+include Fezzik::DSL
 
-Fezzik.destination :prod do
-  Fezzik.set :user, "root"
-  Fezzik.set :domain, "myapp.com"
+destination :prod do
+  set :user, "root"
+  set :domain, "myapp.com"
 end
 ```
 
@@ -38,7 +39,7 @@ Write some host tasks that will execute on the specified destination:
 
 ```ruby
 namespace :fezzik do
-  Fezzik.host_task :echo do
+  host_task :echo do
     run "echo 'Running on #{host}'"
   end
 end
@@ -68,8 +69,8 @@ end
 would look like this as a host task:
 
 ```ruby
-Fezzik.host_task :echo, :args => [:arg1, :arg2],
-                        :deps => [:dep1, :dep2] do |t, args|
+host_task :echo, :args => [:arg1, :arg2],
+                 :deps => [:dep1, :dep2] do |t, args|
   ...
 end
 ```
@@ -81,24 +82,25 @@ One of the more useful things you can use Fezzik for is handling deployments.
 
 ```ruby
 require "fezzik"
+include Fezzik::DSL
 
 # Fezzik will automatically load any .rake files it finds in this directory.
 Fezzik.init(:tasks => "config/tasks")
 
 # The only special settings are `:domain` and `:user`. The rest are purely convention. All settings can be
-# retrieved in your tasks with `get` (e.g., `Fezzik.get :current_path`).
-Fezzik.set :app, "myapp"
-Fezzik.set :user, "root"
-Fezzik.set :deploy_to, "/opt/#{Fezzik.get :app}"
-Fezzik.set :release_path, "#{Fezzik.get :deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
-Fezzik.set :current_path, "#{Fezzik.get :deploy_to}/current"
+# retrieved in your tasks with `get` (e.g., `get :current_path`).
+set :app, "myapp"
+set :user, "root"
+set :deploy_to, "/opt/#{get :app}"
+set :release_path, "#{get :deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
+set :current_path, "#{get :deploy_to}/current"
 
-Fezzik.destination :staging do
-  Fezzik.set :domain, "myapp-staging.com"
+destination :staging do
+  set :domain, "myapp-staging.com"
 end
 
-Fezzik.destination :prod do
-  Fezzik.set :domain, "myapp.com"
+destination :prod do
+  set :domain, "myapp.com"
 end
 ```
 
@@ -111,16 +113,16 @@ $ fez get deploy
     [new] deploy.rake
 ```
 
-You'll need to edit the fezzik:start and fezzik:stop tasks in deploy.rake since those are specific to your
+You'll need to edit the `fezzik:start` and `fezzik:stop` tasks in deploy.rake since those are specific to your
 project.
 
 ```ruby
 namespace :fezzik do
   ...
   desc "runs the executable in project/bin"
-  Fezzik.host_task :start do
-    puts "starting from #{(run "readlink #{Fezzik.get :current_path}", :output => capture)[:stdout] }}"
-    run "cd #{Fezzik.get :current_path} && ./bin/run_app.sh"
+  host_task :start do
+    puts "starting from #{(run "readlink #{get :current_path}", :output => capture)[:stdout] }}"
+    run "cd #{get :current_path} && ./bin/run_app.sh"
   end
 
   desc "kills the application by searching for the specified process name"
@@ -152,9 +154,9 @@ $ fez get deploy
 ```
 
 ```ruby
-Fezzik.destination :prod do
-  Fezzik.set :domain, "myapp.com"
-  Fezzik.env :rack_env, "production"
+destination :prod do
+  set :domain, "myapp.com"
+  env :rack_env, "production"
 end
 ```
 
@@ -164,27 +166,27 @@ project directly.
 
 ```ruby
   desc "runs the executable in project/bin"
-  Fezzik.host_task :start do
-    run "cd #{Fezzik.get :current_path} && (source environment.sh || true) && ./bin/run_app.sh"
+  host_task :start do
+    run "cd #{get :current_path} && (source environment.sh || true) && ./bin/run_app.sh"
   end
 ```
 
 You can assign different environments to subsets of hosts:
 
 ```ruby
-Fezzik.destination :prod do
-  Fezzik.set :domain, ["myapp1.com", "myapp2.com"]
-  Fezzik.env :rack_env, "production"
-  Fezzik.env :is_canary, "true", :hosts => ["myapp1.com"]
+destination :prod do
+  set :domain, ["myapp1.com", "myapp2.com"]
+  env :rack_env, "production"
+  env :is_canary, "true", :hosts => ["myapp1.com"]
 end
 ```
 
-Fezzik accepts multiple destinations in the call to `Fezzik.destination`.
+Fezzik accepts multiple destinations in the call to `destination`.
 This can be useful if you have common environment variables shared across destinations.
 
 ```ruby
-Fezzik.destination :staging, :prod do
-  Fezzik.env :unicorn_workers, 4
+destination :staging, :prod do
+  env :unicorn_workers, 4
 end
 ```
 
@@ -199,7 +201,7 @@ end
 To access the environment for the currently targeted host:
 
 ```ruby
-Fezzik.host_task :inspect_environment do
+host_task :inspect_environment do
   puts Fezzik.environments[host].inspect
 end
 ```
@@ -212,17 +214,17 @@ to their purpose. For example, you might want to perform your initial package in
 your app as an unprivileged user.
 
 ```ruby
-Fezzik.destination :prod do
-  Fezzik.set :domain, "myapp.com"
-  Fezzik.role :root_user, :user => "root"
-  Fezzik.role :run_user, :user => "app"
+destination :prod do
+  set :domain, "myapp.com"
+  role :root_user, :user => "root"
+  role :run_user, :user => "app"
 end
 
-Fezzik.host_task :install, :roles => :root_user
+host_task :install, :roles => :root_user
   # Install all the things.
 end
 
-Fezzik.host_task :run, :roles => :run_user
+host_task :run, :roles => :run_user
   # Run all the things.
 end
 ```
@@ -230,24 +232,24 @@ end
 Or, you might have different domains for database deployment and app deployment.
 
 ```ruby
-Fezzik.destination :prod do
-  Fezzik.set :user, "root"
-  Fezzik.role :db, :domain => "db.myapp.com"
-  Fezzik.role :app, :domain => "myapp.com"
+destination :prod do
+  set :user, "root"
+  role :db, :domain => "db.myapp.com"
+  role :app, :domain => "myapp.com"
 end
 ```
 
 Roles in destination blocks can override global role settings.
 
 ```ruby
-Fezzik.role :app, :domain => "localhost"
+role :app, :domain => "localhost"
 
-Fezzik.destination :prod do
-  Fezzik.role :app, :domain => "myapp.com"
+destination :prod do
+  role :app, :domain => "myapp.com"
 end
 ```
 
-The `Fezzik.role` method accepts a role name and a hash of values that you want assigned with the
+The `role` method accepts a role name and a hash of values that you want assigned with the
 `set :var, value` syntax. These will override the global or destination settings when a host task is
 run.
 
@@ -293,8 +295,8 @@ As a helper, any `puts` used from within a host task will call an overridden thr
 
 ## DSL
 
-Fezzik comes with a DSL module that you can optionally include in the top level of your Rakefiles. It exposes
-the following functions:
+Fezzik comes with a DSL module that you can optionally include in the top level of your Rakefiles with
+`include Fezzik::DSL`. It exposes the following functions:
 
 ```
 destination
@@ -306,22 +308,8 @@ role
 capture_output
 ```
 
-This lets you write your configuration more tersely:
-
-```ruby
-include Fezzik::DSL
-
-destination :prod do
-  set :domain "myapp.com"
-  env :rack_env, "production"
-  role :root_user, :user => "root"
-end
-
-host_task :echo do
-  run "echo 'Running on #{host}'"
-end
-```
-
+If you don't want to include these functions in your top-level namespace they can all be called directly on
+the Fezzik module, e.g., `Fezzik.destination`.
 
 ## Included Tasks
 
@@ -407,7 +395,7 @@ connection pool, but necessarily introduces a few breaking changes. These are de
   it manually:
 
     ```ruby
-    Fezzik.set :current_path, "#{Fezzik.get :deploy_to}/current`.
+    set :current_path, "#{get :deploy_to}/current`.
     ```
 
 - The helper method `rsync` no longer exists. Instead of `rsync "..."` use `system("rsync -az ...")`
@@ -416,8 +404,8 @@ connection pool, but necessarily introduces a few breaking changes. These are de
 ### Deprecations
 
 - The `remote_task` method is deprecated. Use `host_task` instead.
-- Using settings defined by `Fezzik.set` as top-level method calls is deprecated. For example, use
-  `Fezzik.get :domain` instead of `domain`.
+- Using settings defined by `set` as top-level method calls is deprecated. For example, use
+  `get :domain` instead of `domain`.
 - Fezzik::Util.capture_output is deprecated. Pass options directly to `run` instead:
 
     ```ruby
