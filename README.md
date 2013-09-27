@@ -54,11 +54,11 @@ $ fez prod echo
 ### host_task
 
 The `host_task` method is similar to Rake's `task` in functionality, but has a slightly different API due to
-its additional options. A host task is defined with a name some (optional) options. The three primary ones are
-`:args`, `:deps`, and `:roles`. `:args` and `:deps` correspond to Rake's task arguments and task dependencies,
-and `:roles` is a Fezzik-specific option explained later. There are also three additional options which can be
-passed to [Weave](https://github.com/cespare/weave), Fezzik's underlying ssh library, by specifying them in a
-`:weave_options` hash. They control how host tasks run concurrently:
+its additional options. A host task is defined with a name and some (optional) options. The three primary ones
+are `:args`, `:deps`, and `:roles`. `:args` and `:deps` correspond to Rake's task arguments and task
+dependencies, and `:roles` is a Fezzik-specific option explained later. There are also three additional
+options which can be passed to [Weave](https://github.com/cespare/weave), Fezzik's underlying ssh library, by
+specifying them in a `:weave_options` hash. They control how host tasks run concurrently:
 
 - `:num_threads`: The number of threads used to run this task in parallel, or `:unlimited` to use a thread for
                   every host. Defaults to 10.
