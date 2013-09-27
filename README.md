@@ -54,9 +54,14 @@ $ fez prod echo
 ### host_task
 
 The `host_task` method is similar to Rake's `task` in functionality, but has a slightly different API due to
-its additional options. A host task is defined with a name and three (optional) options: `:args`, `:deps`,
-and `:roles`. `:args` and `:deps` correspond to Rake's task arguments and task dependencies, and `:roles` is a
-Fezzik-specific option explained later.
+its additional options. A host task is defined with a name some (optional) options. The three primary ones are
+`:args`, `:deps`, and `:roles`. `:args` and `:deps` correspond to Rake's task arguments and task dependencies,
+and `:roles` is a Fezzik-specific option explained later. There are also three additional options which
+control how host tasks run concurrently:
+
+- `:num_threads`: the number of threads used to run this task in parallel; defaults to 10.
+- `:serial`: whether to process the command for each connection one at a time; defaults to false
+- `:batch_by`: if set, group the connections into batches of no more than this value
 
 A Rake task that looks like this:
 
