@@ -56,12 +56,14 @@ $ fez prod echo
 The `host_task` method is similar to Rake's `task` in functionality, but has a slightly different API due to
 its additional options. A host task is defined with a name some (optional) options. The three primary ones are
 `:args`, `:deps`, and `:roles`. `:args` and `:deps` correspond to Rake's task arguments and task dependencies,
-and `:roles` is a Fezzik-specific option explained later. There are also three additional options which
-control how host tasks run concurrently:
+and `:roles` is a Fezzik-specific option explained later. There are also three additional options which can be
+passed to [Weave](https://github.com/cespare/weave), Fezzik's underlying ssh library, by specifying them in a
+`:weave_options` hash. They control how host tasks run concurrently:
 
-- `:num_threads`: the number of threads used to run this task in parallel; defaults to 10.
-- `:serial`: whether to process the command for each connection one at a time; defaults to false
-- `:batch_by`: if set, group the connections into batches of no more than this value
+- `:num_threads`: The number of threads used to run this task in parallel, or `:unlimited` to use a thread for
+                  every host. Defaults to 10.
+- `:serial`: Whether to process the command for each connection one at a time. Defaults to false.
+- `:batch_by`: If set, group the connections into batches of no more than this value.
 
 A Rake task that looks like this:
 
@@ -80,6 +82,22 @@ host_task :echo, :args => [:arg1, :arg2],
 end
 ```
 
+And with Weave options:
+
+```ruby
+host_task :echo, :args => [:arg1, :arg2],
+                 :deps => [:dep1, :dep2],
+                 :weave_options => {:num_threads => 20} do |t, args|
+  ...
+end
+```
+
+To avoid repeating the same `weave_options` on every host_task, set `Fezzik.default_weave_options`, which
+will be merged with the `:weave_options` hash of a `host_task`.
+
+```ruby
+Fezzik.default_weave_options = { :num_threads => :unlimited }
+```
 
 ## Deployments
 

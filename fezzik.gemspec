@@ -24,7 +24,7 @@ EOS
   s.files = `git ls-files`.split("\n")
 
   s.add_dependency "rake"
-  s.add_dependency "weave", "=0.2.0"
+  s.add_dependency "weave", "~>1.0.0"
 
   s.add_development_dependency("scope", "~>0.2.3")
 end

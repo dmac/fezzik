@@ -17,12 +17,14 @@ module Fezzik
     def execute(args = nil)
       return if Rake.application.options.dryrun
 
+      merged_weave_options = Fezzik.default_weave_options.merge(@weave_options).merge(:args => [self, args])
+
       if @roles.empty?
         hosts = Fezzik.get(:domain).map { |domain| "#{Fezzik.get(:user)}@#{domain}" }
         @@connection_pool ||= Weave::ConnectionPool.new
         @host_actions.each do |action|
           begin
-            @@connection_pool.execute_with(hosts, @weave_options.merge(:args => [self, args]), &action)
+            @@connection_pool.execute_with(hosts, merged_weave_options, &action)
           rescue Weave::Error => e
             STDERR.puts "Error running command in HostTask '#{@name}':"
             abort e.message
@@ -36,8 +38,7 @@ module Fezzik
             @@role_connection_pools[role] ||= Weave::ConnectionPool.new
             @host_actions.each do |action|
               begin
-                @@role_connection_pools[role].execute_with(hosts, @weave_options.merge(:args => [self, args]),
-                                                           &action)
+                @@role_connection_pools[role].execute_with(hosts, merged_weave_options, &action)
               rescue Weave::Error => e
                 STDERR.puts "Error running command in HostTask '#{@name}' with role '#{role}':"
                 abort e.message

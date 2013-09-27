@@ -2,6 +2,9 @@ module Fezzik
   def self.activated=(value) @activated = value end
   def self.activated?() @activated || false end
 
+  def self.default_weave_options() @@default_weave_options ||= {} end
+  def self.default_weave_options=(options) @@default_weave_options = options end
+
   def self.set(name, value)
     @@settings ||= {}
 
@@ -34,16 +37,15 @@ module Fezzik
     host_task(name, { :args => Array(args), :deps => Array(deps), :roles => Array(roles) }, &block)
   end
 
-  WEAVE_OPTIONS = [:num_threads, :serial, :batch_by]
-
   def self.host_task(name, options = {}, &block)
     options = {
       :args => [],
       :deps => [],
-      :roles => []
+      :roles => [],
+      :weave_options => {}
     }.merge(options)
-    weave_options = options.dup.keep_if { |k, v| WEAVE_OPTIONS.include? k }
-    options.delete_if { |k, v| WEAVE_OPTIONS.include? k }
+    weave_options = options[:weave_options]
+    options.delete(:weave_options)
     options.each { |key, value| options[key] = Array(value) }
     t = HostTask.define_task(name, { options[:args] => options[:deps] }, &block)
     t.roles += options[:roles]
