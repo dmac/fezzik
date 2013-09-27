@@ -34,15 +34,20 @@ module Fezzik
     host_task(name, { :args => Array(args), :deps => Array(deps), :roles => Array(roles) }, &block)
   end
 
+  WEAVE_OPTIONS = [:num_threads, :serial, :batch_by]
+
   def self.host_task(name, options = {}, &block)
     options = {
       :args => [],
       :deps => [],
       :roles => []
     }.merge(options)
+    weave_options = options.dup.keep_if { |k, v| WEAVE_OPTIONS.include? k }
+    options.delete_if { |k, v| WEAVE_OPTIONS.include? k }
     options.each { |key, value| options[key] = Array(value) }
     t = HostTask.define_task(name, { options[:args] => options[:deps] }, &block)
     t.roles += options[:roles]
+    t.weave_options = t.weave_options.merge(weave_options)
   end
 
   def self.init(options={})

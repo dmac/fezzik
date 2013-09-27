@@ -1,11 +1,12 @@
 module Fezzik
   class HostTask < Rake::Task
-    attr_accessor :roles
+    attr_accessor :roles, :weave_options
 
     def initialize(task_name, app)
       super
-      @roles = []
       @host_actions = []
+      @roles = []
+      @weave_options = {}
     end
 
     def enhance(deps = nil, &block)
@@ -21,7 +22,7 @@ module Fezzik
         @@connection_pool ||= Weave::ConnectionPool.new
         @host_actions.each do |action|
           begin
-            @@connection_pool.execute_with(hosts, :args => [self, args], &action)
+            @@connection_pool.execute_with(hosts, @weave_options.merge(:args => [self, args]), &action)
           rescue Weave::Error => e
             STDERR.puts "Error running command in HostTask '#{@name}':"
             abort e.message
@@ -35,7 +36,8 @@ module Fezzik
             @@role_connection_pools[role] ||= Weave::ConnectionPool.new
             @host_actions.each do |action|
               begin
-                @@role_connection_pools[role].execute_with(hosts, :args => [self, args], &action)
+                @@role_connection_pools[role].execute_with(hosts, @weave_options.merge(:args => [self, args]),
+                                                           &action)
               rescue Weave::Error => e
                 STDERR.puts "Error running command in HostTask '#{@name}' with role '#{role}':"
                 abort e.message
