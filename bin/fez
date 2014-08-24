@@ -78,11 +78,12 @@ EOF
   end
   private_class_method :display_tasks_and_exit
 
-  TASKS_URL = "https://raw.github.com/dmacdougall/fezzik/master/tasks"
+
+  TASKS_URL = "https://raw.githubusercontent.com/dmac/fezzik/master/tasks"
   def self.download_tasks_and_exit
     OPTIONS[1..-1].each do |task|
       task += ".rake" unless task =~ /\.rake$/
-      system("curl -f #{TASKS_URL}/#{task} -o #{task} > /dev/null 2>&1")
+      system("curl -L #{TASKS_URL}/#{task} -o #{task} > /dev/null 2>&1")
       if $? == 0
         puts color_string("    [new]", :green) + "  #{task}"
       else
